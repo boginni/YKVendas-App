@@ -1,0 +1,76 @@
+name: forca_de_vendas
+description: A new Flutter application.
+
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.12.0-0.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+
+  flutter_localizations:
+    sdk: flutter
+
+  ant_icons: ^2.0.0-nullsafety.0
+  ionicons: ^0.1.2
+  cupertino_icons:
+  intl: ^0.17.0
+  brasil_fields:
+  provider:
+  sqflite: ^2.0.2
+  path:
+  http:
+  uuid: 3.0.6
+  mask_text_input_formatter: ^2.1.0
+  charts_flutter: ^0.12.0
+  #  flutter_html:
+  #  image_downloader:
+  #  image_picker:
+  #  image_cropper:
+  path_provider:
+  file_picker:
+  share:
+  cached_network_image: ^3.2.0
+  flutter_barcode_scanner:
+  #flutter_barcode_scanner: ^2.0.0
+  web_socket_channel:
+  #  pdf:
+  syncfusion_flutter_pdf:
+  printing: ^5.8.0
+  #  screenshot:
+  dart_ping: ^6.1.2
+
+  platform_device_id: ^1.0.1
+  connectivity_plus: ^2.3.3
+
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  #flutter_launcher_name: ^0.0.1
+  flutter_launcher_icons: ^0.9.2
+  flutter_lints: ^1.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/
+
+
+flutter_launcher_name:
+  name: "Yukem Vendas"
+
+
+flutter_icons:
+  image_path: "assets/icon/icon.png"
+  android: true
+  ios: true
+  #  remove_alpha_ios: true
+  # optionally, as transparency is not allowed on app store
+  # remove_alpha_ios: true
