@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import '../../../api/common/components/list_scrollable.dart';
 import '../../../api/common/custom_widgets/custom_icons.dart';
 import '../../../api/common/custom_widgets/custom_text.dart';
 import '../../../api/common/debugger.dart';
@@ -99,7 +98,11 @@ class _LoginScreenState extends State<LoginScreen> {
                     TelaServidores(
                       ambiente: ambienteController.text,
                     ), callback: () {
-                  setState(() {});
+                  CurrentServer.getServer().then((value) {
+                    setState(() {
+                      server = value;
+                    });
+                  });
                 });
               },
               child: const Icon(Icons.wifi, size: 24),
@@ -141,6 +144,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 onFocusChange: (x) {
                   if (!x) {
                     ambienteController.text = ambienteController.text.trim();
+
+                    getServer();
                   }
                 },
                 child: TextFormField(
@@ -252,7 +257,12 @@ class _LoginScreenState extends State<LoginScreen> {
                   onPressed: () {
                     // login();
 
-                    login();
+
+                    if (server == null || server!.error) {
+                      getServer();
+                    } else {
+                      login();
+                    }
 
                     // mostrarBarraProgressoCircular(context);
                   },
@@ -266,8 +276,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     }
 
                     return Text(
-                      server == null ? "Buscar Servidor" : "Entrar",
-                      style: TextStyle(fontSize: 18),
+                      server == null || server!.error
+                          ? "Buscar Servidor"
+                          : "Entrar",
+                      style: const TextStyle(fontSize: 18),
                     );
                   }),
                 ),
@@ -281,20 +293,20 @@ class _LoginScreenState extends State<LoginScreen> {
                 textAlign: TextAlign.center,
               ),
 
+              if (errorMsg != null || errorMsg2 != null)
+                const SizedBox(
+                  height: 24,
+                ),
+
               if (errorMsg != null)
-                ListViewNested(children: [
-                  const SizedBox(
-                    height: 24,
-                  ),
-                  Align(
-                    alignment: Alignment.center,
-                    child: TextTitle(errorMsg!),
-                  ),
-                  if (errorMsg2 != null)
-                    Center(
-                      child: TextTitle('Login Offline : $errorMsg2'),
-                    )
-                ]),
+                Align(
+                  alignment: Alignment.center,
+                  child: TextTitle(errorMsg!),
+                ),
+              if (errorMsg2 != null)
+                Center(
+                  child: TextTitle('Login Offline : $errorMsg2'),
+                )
             ],
           ),
         ),
@@ -314,7 +326,7 @@ class _LoginScreenState extends State<LoginScreen> {
     //     });
   }
 
-  offline(Credenciais credenciais) async {
+  Future offline(Credenciais credenciais) async {
     credenciais.offline = true;
 
     final maps = await DatabaseSystem.select('TB_AMBIENTES',
@@ -322,133 +334,221 @@ class _LoginScreenState extends State<LoginScreen> {
 
     try {
       if (maps[0]['TO_SYNC'] != 0) {
-        errorMsg2 = 'Precisa finalizar a sincronização';
+        setState(() {
+          errorMsg2 = 'Precisa finalizar a sincronização';
+        });
         return;
       }
     } catch (e) {
-      errorMsg2 = 'Precisa finalizar a sincronização';
+      setState(() {
+        errorMsg2 = 'Precisa finalizar a sincronização';
+      });
       return;
     }
 
-    showDialog(
-        context: context,
-        builder: (context) {
-          return const AlertDialog(
-            title: TextTitle('teste'),
-          );
-        }).then((value) => {
-          if (value == true)
-            {
-              offlineLogin(
-                credenciais,
-                onSucces: () => acessarAmbiente(context, credenciais),
-                onFail: (error) {
-                  if (error == 0) {
-                    errorMsg2 = "Ambiente inválido para login offline";
-                  } else {
-                    errorMsg2 = "Senha ou Usuário inválido para login offline";
-                  }
-                  setState(() {});
-                },
-              )
-            }
+    await offlineLogin(
+      credenciais,
+      onSucces: () => acessarAmbiente(context, credenciais),
+      onFail: (error) {
+        setState(() {
+          if (error == 0) {
+            errorMsg2 = "Ambiente inválido para login offline";
+          } else {
+            errorMsg2 = "Senha ou Usuário inválido para login offline";
+          }
         });
+      },
+    );
   }
 
   Future getServer() async {
-    CurrentServer currentServer = server!;
-
-    if (currentServer.error) {
-      serverMsg = "Buscando servidor";
-
-      setState(() {});
-
-      await addServidores(ambienteController.text, () {
-        errorMsg = "Servidor Indisponível";
-        setState(() {});
-      });
-
-      if (errorMsg != null) {
-        isLoading = false;
-        setState(() {});
-        return;
-      }
-
-      currentServer = await CurrentServer.getServer();
-    }
-
-    serverMsg = null;
-
-    if (currentServer.error) {
-      errorMsg =
-          "Não foi possível localizar o servidor para \"${ambienteController.text}\"";
-      isLoading = false;
-      setState(() {});
+    if (server == null || !server!.error) {
       return;
     }
+
+    setState(() {
+      isLoading = true;
+      serverMsg = "Buscando servidor";
+      addServidores(ambienteController.text).then((value) async {
+        server = await CurrentServer.getServer();
+
+        setState(() {
+          isLoading = false;
+          if (server!.error) {
+            if (errorMsg != null) {
+              return;
+            }
+          }
+
+          serverMsg = null;
+
+          if (server!.error) {
+            errorMsg =
+                "Não foi possível localizar o servidor para \"${ambienteController.text}\"";
+          }
+
+
+        });
+        //
+      });
+      //
+    });
   }
 
   Future login() async {
+
     if (isLoading) {
       return;
     }
 
-    isLoading = true;
-
-    setState(() {});
-
-    errorMsg = null;
-    errorMsg2 = null;
-
     Credenciais credenciais = Credenciais();
 
-    credenciais.user = usuarioController.text;
-    credenciais.ambiente = ambienteController.text;
-    credenciais.senha = passController.text;
-    credenciais.offline = false;
+    setState(() {
+      errorMsg = null;
+      errorMsg2 = null;
+      credenciais.user = usuarioController.text;
+      credenciais.ambiente = ambienteController.text;
+      credenciais.senha = passController.text;
+      credenciais.offline = false;
+    });
 
-    onlineLogin(credenciais,
-        sincronizarWifi: AppSystem.of(context).sincronizarWifi,
-        onSucces: () => acessarAmbiente(context, credenciais),
-        onFail: (error) {
-          switch (error) {
-            case 101:
-              errorMsg = "Evite Campos nulos";
-              break;
-            case 102:
-              errorMsg = "Ambiente Inexistente!";
-              break;
-            case 103:
-              errorMsg = "Senha ou Usuário inválidos!";
-              break;
-            case 104:
-              errorMsg = "Login online somente em wifi";
+    showDialog(
+        context: context,
+        builder: (x) {
+          bool onLog = true;
+
+          return LoginPopup(
+            onCancel: () {
+              onLog = false;
               offline(credenciais);
-              break;
-            case 301:
-              errorMsg = "Conexão perdida, ou servidor offline tente novamente";
-              offline(credenciais);
-              break;
-            case 302:
-              errorMsg = "Sem Internet";
-              offline(credenciais);
-              break;
-            case 303:
-              errorMsg = "Ambiente ou servidor offline";
-              offline(credenciais);
-              break;
-            case 304:
-              errorMsg =
-                  "Dificuldades ao estabelecer conexão com o servidor, tente novamente";
-              offline(credenciais);
-              break;
-            default:
-              printDebug(error.toString());
-          }
-        }).then((value) {
-      setState(() {
-        isLoading = false;
+            },
+            onStart: (f) {
+              off() {
+                onLog = false;
+                f();
+                offline(credenciais);
+              }
+
+              onlineLogin(
+                credenciais,
+                sincronizarWifi: AppSystem.of(context).sincronizarWifi,
+                onSucces: () {
+                  isLoading = false;
+                  acessarAmbiente(context, credenciais);
+                },
+                onFail: (error) {
+                  switch (error) {
+                    case 101:
+                      errorMsg = "Evite Campos nulos";
+                      break;
+                    case 102:
+                      errorMsg = "Ambiente Inexistente!";
+                      break;
+                    case 103:
+                      errorMsg = "Senha ou Usuário inválidos!";
+                      break;
+                    case 104:
+                      errorMsg = "Login online somente em wifi";
+                      off();
+                      break;
+                    case 301:
+                      errorMsg =
+                          "Conexão perdida, ou servidor offline tente novamente";
+                      off();
+                      break;
+                    case 302:
+                      errorMsg = "Sem Internet";
+                      off();
+                      break;
+                    case 303:
+                      errorMsg = "Ambiente ou servidor offline";
+                      off();
+                      break;
+                    case 304:
+                      errorMsg =
+                          "Dificuldades ao estabelecer conexão com o servidor, tente novamente";
+                      off();
+                      break;
+                    default:
+                      printDebug(error.toString());
+                  }
+                },
+              ).then(
+                (value) {
+                  if (onLog) {
+                    f();
+                  }
+                },
+              );
+            },
+          );
+        });
+  }
+}
+
+class LoginPopup extends StatefulWidget {
+  const LoginPopup({Key? key, required this.onCancel, required this.onStart})
+      : super(key: key);
+
+  final Function onCancel;
+  final Function(Function) onStart;
+
+  @override
+  State<LoginPopup> createState() => _LoginPopupState();
+}
+
+class _LoginPopupState extends State<LoginPopup> {
+  bool canPop = false;
+
+  Future<bool> toPop() async {
+    return canPop;
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) async {
+      widget.onStart(() {
+        Navigator.of(context).pop();
       });
     });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return WillPopScope(
+      onWillPop: () => toPop(),
+      child: Center(
+        child: Card(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const TextNormal('Fazendo Login'),
+                const SizedBox(
+                  height: 16,
+                ),
+                const CircularProgressIndicator(),
+                const SizedBox(
+                  height: 16,
+                ),
+                const TextNormal(
+                    'Logar offline não garante que terá uma sessão válida'),
+                OutlinedButton(
+                  onPressed: () {
+                    canPop = true;
+                    Navigator.of(context).pop();
+                    widget.onCancel();
+                  },
+                  child: const Text('Login Offline'),
+                )
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }

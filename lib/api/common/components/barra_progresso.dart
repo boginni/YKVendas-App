@@ -26,6 +26,7 @@ GlobalKey<BarraProgressoLinearState> mostrarBarraProgresso(
 
 GlobalKey<BarraProgressoCircularState> mostrarBarraProgressoCircular(
     BuildContext context) {
+
   final alertKey = GlobalKey<BarraProgressoCircularState>();
 
   AlertDialog alert = AlertDialog(

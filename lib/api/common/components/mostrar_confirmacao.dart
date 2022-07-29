@@ -18,6 +18,9 @@ Future<bool> mostrarCaixaConfirmacao(BuildContext context,
       Navigator.pop(context, true);
     },
   );
+
+
+
   AlertDialog alert = AlertDialog(
     title: Text(title),
     content: Text(content),
@@ -26,6 +29,7 @@ Future<bool> mostrarCaixaConfirmacao(BuildContext context,
       continueButton,
     ],
   );
+
 
   await showDialog(
     context: context,

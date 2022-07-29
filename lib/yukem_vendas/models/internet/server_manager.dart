@@ -25,25 +25,27 @@ Future<List<Map<String, dynamic>>> getServidoresInternet(
   }
 }
 
-addServidores(String ambiente, Function onFail) async {
+Future<bool> addServidores(String ambiente) async {
   try {
     for (final item in await getServidoresInternet(ambiente)) {
       await DatabaseSystem.insert('TB_SERVIDOR', item,
           conflictAlgorithm: ConflictAlgorithm.replace);
     }
+
+    final list = await getServidoresDatabase();
+
+    if (list.isNotEmpty) {
+      final item = Map.of(list[0]);
+      item['LAST_SERVER'] = 1;
+      await DatabaseSystem.insert('TB_SERVIDOR', item,
+          conflictAlgorithm: ConflictAlgorithm.replace);
+
+      Internet.setURl(item['SERVIDOR'], item['PORTA']);
+    }
+
+    return true;
   } catch (e) {
-    onFail();
-  }
-
-  final list = await getServidoresDatabase();
-
-  if (list.isNotEmpty) {
-    final item = Map.of(list[0]);
-    item['LAST_SERVER'] = 1;
-    await DatabaseSystem.insert('TB_SERVIDOR', item,
-        conflictAlgorithm: ConflictAlgorithm.replace);
-
-    Internet.setURl(item['SERVIDOR'], item['PORTA']);
+    return false;
   }
 }
 
@@ -108,5 +110,4 @@ class CurrentServer {
       color: color,
     );
   }
-
 }

@@ -14,6 +14,7 @@ import '../configuracao/app_user.dart';
 class Forbidden implements Exception {}
 
 abstract class Internet {
+  /// TODO: Rezetar ao padrão
   static String hostName = 'app.comtecnologia.com';
   static String portOut = '9032';
   static String portIn = '';
@@ -84,12 +85,12 @@ abstract class Internet {
     try {
       late final Response res;
 
-      if(timeout != null){
-        res = await post(Uri.parse(urlRequest), body: body, headers: headers).timeout(Duration(milliseconds: timeout));
+      if (timeout != null) {
+        res = await post(Uri.parse(urlRequest), body: body, headers: headers)
+            .timeout(Duration(milliseconds: timeout));
       } else {
         res = await post(Uri.parse(urlRequest), body: body, headers: headers);
       }
-
 
       if (res.statusCode == 403) {
         if (!ignoreFirbidden) {
@@ -174,7 +175,7 @@ abstract class Internet {
 
     return _getResponse(
         post(Uri.parse(urlRequest), body: body, headers: headers),
-        sleepTime: 2);
+        sleepTime: 25);
   }
 
   static Future<Response?> getServers(String ambiente,
