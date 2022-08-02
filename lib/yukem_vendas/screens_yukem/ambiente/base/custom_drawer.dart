@@ -4,11 +4,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:forca_de_vendas/yukem_vendas/models/configuracao/app_user.dart';
 import 'package:forca_de_vendas/yukem_vendas/models/websocket/websocket_handler.dart';
+import 'package:ionicons/ionicons.dart';
 
 import '../../../app_foundation.dart';
-import '../../../common/custom_drawer/drawer_tile.dart';
 import '../../../models/configuracao/app_ambiente.dart';
 import '../../../models/database/database_update.dart';
+import 'drawer_tile.dart';
 
 int curId = 0;
 
@@ -103,6 +104,14 @@ class CustomDrawerState extends State<CustomDrawer>
           //   page: i++,
           // ),
 
+
+
+          DrawerTile(
+            iconData: Icons.home,
+            title: 'Teste',
+            page: i++,
+          ),
+
           if (appAmbiente.usarRota)
             DrawerTile(
               iconData: Icons.home,
@@ -118,46 +127,47 @@ class CustomDrawerState extends State<CustomDrawer>
               page: i++,
             ),
 
-          if (appAmbiente.usarComissao)
-            DrawerTile(
-              iconData: Icons.attach_money,
-              title: 'Tela Comissão',
-              page: i++,
-            ),
-
-          if (appAmbiente.usarVendasTotais)
-            DrawerTile(
-              iconData: Icons.attach_money,
-              title: 'Vendas Totais',
-              page: i++,
-            ),
-
-          DrawerTile(
-            iconData: Icons.shopping_cart_outlined,
-            title: 'Visitas Finalizadas',
-            page: i++,
+          DrawerExpansionTile(
+            iconData: Icons.bar_chart,
+            title: 'Dashboard',
+            children: [
+              if (appAmbiente.usarComissao)
+                DrawerTile(
+                  iconData: Icons.attach_money,
+                  title: 'Comissão',
+                  page: i++,
+                ),
+              if (appAmbiente.usarVendasTotais)
+                DrawerTile(
+                  iconData: Icons.attach_money,
+                  title: 'Vendas Totais',
+                  page: i++,
+                ),
+              DrawerTile(
+                iconData: Icons.shopping_cart_outlined,
+                title: 'Visitas Finalizadas',
+                page: i++,
+              ),
+              DrawerTile(
+                iconData: Icons.pie_chart,
+                title: 'Crítica Vendedor',
+                page: i++,
+              ),
+              DrawerTile(
+                iconData: Ionicons.bar_chart,
+                title: 'Metas',
+                page: i++,
+              ),
+              DrawerTile(
+                iconData: CupertinoIcons.time,
+                title: 'Status Pedido',
+                page: i++,
+              ),
+            ],
+            id: 0,
           ),
 
-          // if (appAmbiente.usarEncerramentoDia)
-          //   DrawerTile(
-          //     iconData: Icons.calendar_today_outlined,
-          //     title: 'Encerramento do dia',
-          //     page: i++,
-          //   ),
-
           const Divider(color: Colors.grey),
-          if (appAmbiente.usarConsultas)
-            DrawerTile(
-              iconData: Icons.search,
-              title: 'Consultas',
-              page: i++,
-            ),
-
-          // DrawerTile(
-          //     iconData: TelaCustomizacao.icon,
-          //     title: TelaCustomizacao.title,
-          //     page: i++),
-
           if (appAmbiente.usarCadastroCliente)
             DrawerTile(
               iconData: Icons.people,

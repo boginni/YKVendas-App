@@ -15,20 +15,33 @@ class Forbidden implements Exception {}
 
 abstract class Internet {
   /// TODO: Rezetar ao padrão
-  static String hostName = 'app.comtecnologia.com';
-  static String portOut = '9032';
-  static String portIn = '';
+  static String _hostName = 'app.comtecnologia.com';
+  static String _portOut = '9032';
+  static String _portIn = '';
 
   static int awaitTime = 15;
 
-  static setURl(String server, String door) {
-    hostName = server;
-    portOut = door;
+
+  static setPortIn(newPortIn){
+
+    _portIn = newPortIn;
+
+  }
+
+  static setURl(String server, String newPortOut, String newPortIn) {
+    _hostName = server;
+    _portOut = newPortOut;
+    _portIn = newPortIn;
+  }
+
+  static String getDefaultHttpServer({bool input = false}) {
+    String server = 'http://app.comtecnologia.com:9032';
+    return server;
   }
 
   static String getHttpServer({bool input = false}) {
-    final door = input ? portIn : portOut;
-    String server = 'http://$hostName:$door';
+    final door = input ? _portIn : _portOut;
+    String server = 'http://$_hostName:$door';
     return server;
   }
 
@@ -37,12 +50,12 @@ abstract class Internet {
   }
 
   static String getWebSocketServer() {
-    String server = 'ws://$hostName:$portOut';
+    String server = 'ws://$_hostName:$_portOut';
     return server;
   }
 
   static String setDefault() {
-    setURl('app.comtecnologia.com', '9032');
+    setURl('app.comtecnologia.com', '9032', '');
     return getHttpServer();
   }
 
@@ -194,7 +207,7 @@ abstract class Internet {
       'ambiente': ambiente
     };
 
-    String urlRequest = '${getHttpServer()}/${ServerPath.VIEW_SERVERS}';
+    String urlRequest = '${getDefaultHttpServer()}/${ServerPath.VIEW_SERVERS}';
 
     return _getResponse(
         post(Uri.parse(urlRequest), body: body, headers: headers),

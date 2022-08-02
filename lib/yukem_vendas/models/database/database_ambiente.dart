@@ -302,6 +302,8 @@ abstract class DatabaseAmbiente {
       await batch.commit();
       return null;
     } catch (e) {
+
+      printDebug(e);
       printDebug(e.toString());
 
       return e;

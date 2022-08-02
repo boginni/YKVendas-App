@@ -67,15 +67,15 @@ class _TelaComissaoState extends State<TelaComissao> {
             shrinkWrap: true,
             controller: _scrollController,
             children: [
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: SizedBox(
-                      height: height,
-                      width: width,
-                      child: HorizontalBarLabelChart.comissaoMes(listMes, false)),
-                ),
-              ),
+              // Card(
+              //   child: Padding(
+              //     padding: const EdgeInsets.all(8.0),
+              //     child: SizedBox(
+              //         height: height,
+              //         width: width,
+              //         child: HorizontalBarLabelChart.comissaoMes(listMes, false)),
+              //   ),
+              // ),
               if (listMes.isNotEmpty)
                 _Detalhes(
                   idVendedor: idVendedor,

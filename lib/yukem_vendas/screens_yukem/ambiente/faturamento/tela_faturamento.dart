@@ -56,6 +56,7 @@ class _TelaFaturamentoState extends State<xTelaFaturamento> {
     appSystem = AppSystem.of(context);
     appAmbiente = AppAmbiente.of(context);
     appUser = AppUser.of(context);
+
     WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
       updateAndSearch();
     });
@@ -69,23 +70,22 @@ class _TelaFaturamentoState extends State<xTelaFaturamento> {
     });
   }
 
+  navigate(String route, {dynamic args, required Function() callback}) {
+    Navigator.of(context).pushNamed(route, arguments: args).then(
+          (value) => updateAndSearch().then((value) => callback()),
+        );
+  }
+
   adicionar() {
     insertVisitaAgenda(0, 0,
             faturamento: true, idVendedor: appUser.vendedorAtual)
         .then(
       (value) {
-        Navigator.of(context)
-            .pushNamed(getRedirectRouteName(), arguments: value)
-            .then(
-          (value) {
-            updateAndSearch().then(
-              (value) {
-                SyncHandler.sincronizar(show: false, context: context)
-                    .then((value) => updateAndSearch());
-              },
-            );
-          },
-        );
+        navigate(getRedirectRouteName(), args: value, callback: () {
+          SyncHandler.sincronizar(show: false, context: context).then((value) {
+            updateAndSearch();
+          });
+        });
       },
     );
   }

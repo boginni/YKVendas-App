@@ -51,7 +51,7 @@ class SyncLoader {
 
   syncAll() async {
     if (kDebugMode) {
-      printDebug('sincronizando');
+      // printDebug('sincronizando');
     }
 
     int i = 0;
@@ -96,7 +96,7 @@ class SyncLoader {
           filter: ['ID_EMPRESA', 'RT_ROTA', 'RT_VENDEDOR', 'DATA_LAST_UPDATE']);
     }
 
-      printDebug('finalizado');
+      // printDebug('finalizado');
 
 
     listener.onProgress('Finalizando...', _totalViews, _totalViews);

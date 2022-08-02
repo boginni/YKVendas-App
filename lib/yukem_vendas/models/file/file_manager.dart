@@ -4,6 +4,8 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
+import '../../../api/common/debugger.dart';
+
 class FileManager {
   static getDirectory(Directory dir) {
     return dir.path;
@@ -61,7 +63,7 @@ class FilePath {
     // final dir = await getApplicationDocumentsDirectory();
     // final dir = await getExternalStorageDirectories();
     final dir = await getExternalStorageDirectory();
-    print(dir);
+    printDebug(dir);
     return  '${dir!.path}/backup/$ambiente/';
     // return  'aaa';
   }

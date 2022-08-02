@@ -235,8 +235,8 @@ class _TelaServidoresState extends State<TelaServidores> {
                                             .then((value) {
                                           if (value) {
                                             DatabaseSystem.delete('TB_SERVIDOR',
-                                                    where: 'ID = ?',
-                                                    whereArgs: [item['ID']])
+                                                    where: 'ID_LOCAL = ?',
+                                                    whereArgs: [item['ID_LOCAL']])
                                                 .then(
                                                     (value) => setState(() {}));
                                           }

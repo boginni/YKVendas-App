@@ -52,6 +52,14 @@ Future offlineLogin(Credenciais credenciais,
     credenciais.uuid = res[0]['UUID'];
     credenciais.idVendedor = res[0]['ID_VENDEDOR'];
 
+    // await DatabaseSystem.update('TB_SERVIDOR', {'PORTA_IN': Internet.portIn},
+    //     where: 'AMBIENTE = ?', whereArgs: [credenciais.ambiente]);
+    //
+    DatabaseSystem.select('TB_SERVIDOR',
+        where: 'LAST_SERVER = ?', whereArgs: [1]).then((value) {
+      Internet.setPortIn(value[0]['PORTA_IN'].toString());
+    });
+
     onSucces();
   } else {
     List<Map<String, dynamic>> res = await DatabaseSystem.select('TB_USERS',
@@ -81,13 +89,12 @@ Future onlineLogin(Credenciais credenciais,
     final ConnectivityResult result = await Connectivity().checkConnectivity();
 
     if (result == ConnectivityResult.wifi) {
-      printDebug('Connected to a Wi-Fi network');
+      // printDebug('Connected to a Wi-Fi network');
     } else if (result == ConnectivityResult.mobile) {
       if (sincronizarWifi) {
         onFail(104);
         return;
       }
-
     } else {
       printDebug('Not connected to any network');
     }
@@ -101,18 +108,15 @@ Future onlineLogin(Credenciais credenciais,
       "ambiente": credenciais.ambiente,
     };
 
-    var res = await Internet.serverLogin(ServerPath.LOGIN, body: body, headers: headers);
+    var res = await Internet.serverLogin(ServerPath.LOGIN,
+        body: body, headers: headers);
 
     if (res == null) {
       onFail(0);
       return;
     }
 
-    final maps =
-        const JsonDecoder().convert(res.body) as Map<String, dynamic>;
-
-
-    printDebug(maps.toString());
+    final maps = const JsonDecoder().convert(res.body) as Map<String, dynamic>;
 
     if (maps['ID_VENDEDOR'] != null) {
       int idVendedor = maps['ID_VENDEDOR'];
@@ -121,9 +125,10 @@ Future onlineLogin(Credenciais credenciais,
       credenciais.idVendedor = idVendedor;
       credenciais.uuid = uuid;
 
-      Internet.portIn = maps['port'].toString();
+      Internet.setPortIn(maps['port'].toString());
 
-      await DatabaseSystem.update('TB_SERVIDOR', {'PORTA_IN': Internet.portIn},
+      await DatabaseSystem.update(
+          'TB_SERVIDOR', {'PORTA_IN': maps['port'].toString()},
           where: 'AMBIENTE = ?', whereArgs: [credenciais.ambiente]);
 
       onSucces();

@@ -7,7 +7,7 @@ import '../../../api/common/debugger.dart';
 
 String appVersion = '0.4.33a';
 String dbAmbiente = '0.4.33 - 002';
-String dbSystem = '0.4.31 - 001';
+String dbSystem = '0.4.33 - 001';
 
 class OperacaoCancelada implements Exception {}
 

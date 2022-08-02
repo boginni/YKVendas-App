@@ -70,8 +70,8 @@ class SyncHandler {
             context: context,
             inputServer: true,
             ignoreFirbidden: true,
-            timeout: 2500)
-        .timeout(const Duration(seconds: 1));
+            timeout: 5000)
+        .timeout(const Duration(seconds: 5));
 
     if (res.body == '1') {
       return null;
@@ -84,8 +84,6 @@ class SyncHandler {
 
   static Future sincronizar(
       {bool show = false, required BuildContext context}) async {
-
-
     late final GlobalKey<BarraProgressoCircularState> key;
 
     if (show) {

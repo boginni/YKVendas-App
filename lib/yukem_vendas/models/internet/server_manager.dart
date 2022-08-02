@@ -40,7 +40,7 @@ Future<bool> addServidores(String ambiente) async {
       await DatabaseSystem.insert('TB_SERVIDOR', item,
           conflictAlgorithm: ConflictAlgorithm.replace);
 
-      Internet.setURl(item['SERVIDOR'], item['PORTA']);
+      Internet.setURl(item['SERVIDOR'], item['PORTA'], item['PORTA_IN']);
     }
 
     return true;
@@ -71,7 +71,7 @@ class CurrentServer {
 
     final item = res[0];
 
-    Internet.setURl(item['SERVIDOR'], item['PORTA']);
+    Internet.setURl(item['SERVIDOR'], item['PORTA'], '');
     return item['APELIDO'] ?? '';
   }
 

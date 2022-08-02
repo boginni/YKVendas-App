@@ -50,7 +50,7 @@ class AppAmbiente {
 
   static Future<Map<String, dynamic>> getAppAmbiente(int idUser) async {
     final List<Map<String, dynamic>> list =
-    await DatabaseAmbiente.select('VW_CONFIG_USER');
+    await DatabaseAmbiente.select('VW_CONFIG_USER', where: '');
 
     Map<String, dynamic> maps = {};
 

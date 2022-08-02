@@ -81,16 +81,17 @@ class _TelaVendasTotaisState extends State<xTelaVendasTotais> {
             shrinkWrap: true,
             controller: _scrollController,
             children: [
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: SizedBox(
-                      height: height,
-                      width: width,
-                      child:
-                          HorizontalBarLabelChart.comissaoMes(listMes, true)),
-                ),
-              ),
+              // Card(
+              //   child: Padding(
+              //     padding: const EdgeInsets.all(8.0),
+              //     child: SizedBox(
+              //         height: height,
+              //         width: width,
+              //         child:
+              //             HorizontalBarLabelChart.comissaoMes(listMes, true)),
+              //   ),
+              // ),
+
               if (listMes.isNotEmpty)
                 _Detalhes(
                   idVendedor: idVendedor,

@@ -257,7 +257,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   onPressed: () {
                     // login();
 
-
                     if (server == null || server!.error) {
                       getServer();
                     } else {
@@ -386,8 +385,6 @@ class _LoginScreenState extends State<LoginScreen> {
             errorMsg =
                 "Não foi possível localizar o servidor para \"${ambienteController.text}\"";
           }
-
-
         });
         //
       });
@@ -396,7 +393,6 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future login() async {
-
     if (isLoading) {
       return;
     }
@@ -423,10 +419,16 @@ class _LoginScreenState extends State<LoginScreen> {
               offline(credenciais);
             },
             onStart: (f) {
-              off() {
-                onLog = false;
-                f();
-                offline(credenciais);
+              doResult(String msg, bool off) {
+                setState(() {
+                  errorMsg = msg;
+                });
+
+                if (off) {
+                  onLog = false;
+                  f();
+                  offline(credenciais);
+                }
               }
 
               onlineLogin(
@@ -439,35 +441,34 @@ class _LoginScreenState extends State<LoginScreen> {
                 onFail: (error) {
                   switch (error) {
                     case 101:
-                      errorMsg = "Evite Campos nulos";
+                      doResult("Evite Campos nulos", false);
                       break;
                     case 102:
-                      errorMsg = "Ambiente Inexistente!";
+                      doResult("Ambiente Inexistente!", false);
                       break;
                     case 103:
-                      errorMsg = "Senha ou Usuário inválidos!";
+                      doResult("Senha ou Usuário inválidos!", false);
                       break;
                     case 104:
-                      errorMsg = "Login online somente em wifi";
-                      off();
+                      doResult("Login online somente em wifi", true);
                       break;
                     case 301:
-                      errorMsg =
-                          "Conexão perdida, ou servidor offline tente novamente";
-                      off();
+                      doResult(
+                        "Conexão perdida, ou servidor offline tente novamente",
+                        true,
+                      );
                       break;
                     case 302:
-                      errorMsg = "Sem Internet";
-                      off();
+                      doResult("Sem Internet", true);
                       break;
                     case 303:
-                      errorMsg = "Ambiente ou servidor offline";
-                      off();
+                      doResult("Ambiente ou servidor offline", true);
                       break;
                     case 304:
-                      errorMsg =
-                          "Dificuldades ao estabelecer conexão com o servidor, tente novamente";
-                      off();
+                      doResult(
+                        "Dificuldades ao estabelecer conexão com o servidor, tente novamente",
+                        true,
+                      );
                       break;
                     default:
                       printDebug(error.toString());

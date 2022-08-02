@@ -6,6 +6,7 @@ import 'package:forca_de_vendas/yukem_vendas/models/database_objects/tabela_prec
 import '../../../../../api/common/components/list_scrollable.dart';
 import '../../../../../api/common/custom_widgets/custom_buttons.dart';
 import '../../../../../api/common/custom_widgets/floating_bar.dart';
+import '../../../../../api/common/debugger.dart';
 import '../../../../common/components/custom_cached_image.dart';
 import '../../../../models/configuracao/app_ambiente.dart';
 import '../../../../models/configuracao/app_user.dart';
@@ -63,12 +64,12 @@ class _TelaItemPedidoState extends State<TelaItemPedido> {
         idItem: idItem,
       ).catchError(
         (e) {
-          print(e);
+          printDebug(e);
         },
 
       );
     } catch (e) {
-      print(e);
+      printDebug(e);
       rethrow;
     }
   }

@@ -117,8 +117,8 @@ class _TelaBuscarServidoresState extends State<TelaBuscarServidores> {
                             child: ButtonSalvar(
                                 enabled: true,
                                 onPressed: () {
-                                  Internet.setURl(server.text, door.text);
-
+                                  Internet.setURl(
+                                      server.text, door.text, door.text);
                                   setState(() {});
                                 }),
                           ),

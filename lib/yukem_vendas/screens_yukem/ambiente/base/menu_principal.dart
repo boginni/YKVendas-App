@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:forca_de_vendas/api/models/page_manager.dart';
 import 'package:forca_de_vendas/yukem_vendas/models/configuracao/app_user.dart';
 import 'package:forca_de_vendas/yukem_vendas/models/file/file_manager.dart';
+import 'package:forca_de_vendas/yukem_vendas/screens_yukem/ambiente/dashboard/tela_status_pedidos.dart';
 import 'package:forca_de_vendas/yukem_vendas/screens_yukem/ambiente/faturamento/tela_faturamento.dart';
+import 'package:forca_de_vendas/yukem_vendas/screens_yukem/ambiente/teste/tela_gerador_vendas.dart';
 import 'package:forca_de_vendas/yukem_vendas/screens_yukem/ambiente/vendas/tela_vendas.dart';
 import 'package:forca_de_vendas/yukem_vendas/screens_yukem/ambiente/vendas/tela_vendas_totais.dart';
 import 'package:http/http.dart' as http;
@@ -18,6 +20,8 @@ import '../../../models/websocket/websocket_handler.dart';
 import '../clientes/tela_clientes.dart';
 import '../configuracoes/tela_configuracoes_user.dart';
 import '../consultas/tela_consultas.dart';
+import '../dashboard/tela_critica.dart';
+import '../dashboard/tela_metas.dart';
 import '../produtos/tela_produtos.dart';
 import '../rotas/tela_rotas.dart';
 import '../vendas/tela_comissao.dart';
@@ -113,12 +117,16 @@ class _BaseSreenState extends State<MenuPrincipal>
         controller: pageController,
         physics: const NeverScrollableScrollPhysics(),
         children: [
+          TelaGerarVendas(),
           // const Teste(),
           if (appAmbiente.usarRota) const TelaPrincipal(),
           if (appAmbiente.usarFaturamento) const TelaFaturamento(),
           if (appAmbiente.usarComissao) const TelaComissao(),
           if (appAmbiente.usarVendasTotais) const TelaVendasTotais(),
           const TelaVisitaConcluida(),
+          const TelaCritica(),
+          const TelaMetas(),
+          const TelaStatusPedido(),
           // if (appAmbiente.usarEncerramentoDia) const TelaEncarramentoDia(),
           if (appAmbiente.usarConsultas) const TelaConsultas(),
 
@@ -136,6 +144,4 @@ class _BaseSreenState extends State<MenuPrincipal>
       ),
     );
   }
-
-
 }
