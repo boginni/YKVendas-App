@@ -64,7 +64,7 @@ class ModuloVisita {
   Future<void> update(Map<String, dynamic> maps) async {
     await DatabaseAmbiente.update('TB_VISITA', maps,
         where: 'ID = ?', whereArgs: [id]);
-    printDebug('visita update : ${maps}');
+    // printDebug('visita update : ${maps}');
   }
 
   static Future<ModuloVisita> fromId(int idVisita) async {

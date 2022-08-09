@@ -49,8 +49,9 @@ Future<Rota> getUltimaRota() async {
 class AppAmbiente {
 
   static Future<Map<String, dynamic>> getAppAmbiente(int idUser) async {
+
     final List<Map<String, dynamic>> list =
-    await DatabaseAmbiente.select('VW_CONFIG_USER', where: '');
+    await DatabaseAmbiente.select('VW_CONFIG_USER', where: 'ID_USER = ?', whereArgs: [idUser]);
 
     Map<String, dynamic> maps = {};
 

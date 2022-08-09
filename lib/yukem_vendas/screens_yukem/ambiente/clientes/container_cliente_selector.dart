@@ -88,8 +88,6 @@ class _ContainerClienteSelectorState extends State<ContainerClienteSelector>
       bool firma =
           (appAmbinete.usarFirma && widget.idVendedor == appAmbinete.firma);
 
-
-
       if (!firma && appAmbinete.usarFiltroClienteVendedor) {
         if (widget.idVendedor != null) {
           args += ' and (ID_VENDEDOR = ? or (TO_SYNC = 1 and ID_SYNC IS NULL))';
@@ -97,9 +95,11 @@ class _ContainerClienteSelectorState extends State<ContainerClienteSelector>
         }
       }
 
-      bool normal = (firma && appAmbinete.usarFiltroClienteVendedor) || widget.idVendedor == null;
 
-      return Cliente.getList(args, param, normal: normal );
+      bool normal = (firma && appAmbinete.usarFiltroClienteVendedor) ||
+          widget.idVendedor == null;
+
+      return Cliente.getList(args, param, normal: normal);
     }
 
     final field = appAmbinete.buscaClientId ? 'Id' : 'CPF/CNPJ';

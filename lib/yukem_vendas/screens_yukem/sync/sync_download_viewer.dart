@@ -78,7 +78,7 @@ class SyncDownloaderViewerState extends State<SyncDownloaderViewer>
         if (sync.preparando) const Text('Aguardando Resposta do servidor'),
         if (sync.isDownloading)
           Text(
-              '${sync.getCurrentSizeMb().toStringAsFixed(2)} ${sync.getCurrentSizeMb().toStringAsFixed(2)}'),
+              '${sync.getCurrentSizeMb().toStringAsFixed(2)} / ${sync.getTotalSizeMb().toStringAsFixed(2)}'),
         TextButton(
           onPressed: () {
             close();

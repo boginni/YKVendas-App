@@ -117,7 +117,7 @@ class _BaseSreenState extends State<MenuPrincipal>
         controller: pageController,
         physics: const NeverScrollableScrollPhysics(),
         children: [
-          TelaGerarVendas(),
+          // TelaGerarVendas(),
           // const Teste(),
           if (appAmbiente.usarRota) const TelaPrincipal(),
           if (appAmbiente.usarFaturamento) const TelaFaturamento(),
@@ -125,7 +125,7 @@ class _BaseSreenState extends State<MenuPrincipal>
           if (appAmbiente.usarVendasTotais) const TelaVendasTotais(),
           const TelaVisitaConcluida(),
           const TelaCritica(),
-          const TelaMetas(),
+          // const TelaMetas(),
           const TelaStatusPedido(),
           // if (appAmbiente.usarEncerramentoDia) const TelaEncarramentoDia(),
           if (appAmbiente.usarConsultas) const TelaConsultas(),

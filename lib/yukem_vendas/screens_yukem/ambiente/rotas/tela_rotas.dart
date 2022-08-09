@@ -66,7 +66,7 @@ class TelaRotas extends ModdelScreen {
                 onPress() async {
                   Provider.of<Rota>(context, listen: false).id = rota.id;
                   Provider.of<Rota>(context, listen: false).nome = rota.nome;
-                  await setAmbienteConfig(16, rota.id);
+                  // await setAmbienteConfig(16, rota.id);
                   syncRota(context);
                   context.read<PageManager>().setPage(0);
                 }

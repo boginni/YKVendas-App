@@ -19,6 +19,8 @@ abstract class ModdelScreen extends StatelessWidget {
     );
   }
 
+
+
   Future<bool> onWillPop(BuildContext context) async {
     if (!context.read<PageManager>().previousPage()) {
       return await mostrarCaixaConfirmacao(context, title: 'Deseja Sair do app?');
