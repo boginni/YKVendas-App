@@ -1,4 +1,7 @@
+import 'dart:collection';
+
 import 'package:flutter/material.dart';
+import 'package:forca_de_vendas/api/models/interface/queue_action.dart';
 import 'package:forca_de_vendas/yukem_vendas/models/configuracao/app_ambiente.dart';
 import 'package:forca_de_vendas/yukem_vendas/screens_yukem/ambiente/base/moddel_screen.dart';
 
@@ -57,11 +60,13 @@ class _TelaProdutosState extends State<xTelaProdutos> {
     appAmbiente = AppAmbiente.of(context);
 
     WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
-      getList(appAmbiente.limitarResultados);
+      getList(appAmbiente.limitarResultados).then((value){
+        QueueAction.doLoop();
+      });
     });
   }
 
-  getList(bool limitar) async {
+  Future getList(bool limitar) async {
     final x = controllerPesquisa.text;
 
     String args = '';

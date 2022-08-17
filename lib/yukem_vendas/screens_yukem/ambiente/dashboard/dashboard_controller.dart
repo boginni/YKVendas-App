@@ -6,7 +6,6 @@ import '../../../../api/common/formatter/date_time_formatter.dart';
 import '../../../models/internet/internet.dart';
 
 abstract class DashBoardController {
-
   static Future getCritica(
     BuildContext context, {
     required int idVendedor,
@@ -28,9 +27,5 @@ abstract class DashBoardController {
     }
 
     return const JsonDecoder().convert(response.body)['rows'];
-
   }
-
-
-
 }

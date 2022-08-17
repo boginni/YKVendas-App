@@ -70,7 +70,9 @@ class _TelaAdicionarItemState extends State<TelaAdicionarItem>
         setState(() {
           totaisPedido = value;
           finishBuild = true;
-          getList();
+          getList().then((value) {
+            QueueAction.doLoop();
+          });
         });
       });
 
@@ -85,7 +87,7 @@ class _TelaAdicionarItemState extends State<TelaAdicionarItem>
     });
   }
 
-  getList() async {
+ Future getList() async {
     getProdutoList(idVisita!,
             idTabela: idTabela,
             filtros: filtrosProdutos!,
@@ -93,7 +95,6 @@ class _TelaAdicionarItemState extends State<TelaAdicionarItem>
         .then(
       (value) {
         setState(() {
-
           itens = value;
         });
       },

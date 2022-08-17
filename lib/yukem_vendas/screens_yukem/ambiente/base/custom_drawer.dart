@@ -104,8 +104,6 @@ class CustomDrawerState extends State<CustomDrawer>
           //   page: i++,
           // ),
 
-
-
           // DrawerTile(
           //   iconData: Icons.home,
           //   title: 'Teste',
@@ -153,14 +151,14 @@ class CustomDrawerState extends State<CustomDrawer>
                 title: 'Crítica Vendedor',
                 page: i++,
               ),
-              // DrawerTile(
-              //   iconData: Ionicons.bar_chart,
-              //   title: 'Metas',
-              //   page: i++,
-              // ),
               DrawerTile(
                 iconData: CupertinoIcons.time,
                 title: 'Status Pedido',
+                page: i++,
+              ),
+              DrawerTile(
+                iconData: Ionicons.bar_chart,
+                title: 'Metas',
                 page: i++,
               ),
             ],

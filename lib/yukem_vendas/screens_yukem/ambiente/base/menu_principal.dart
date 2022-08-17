@@ -127,7 +127,7 @@ class _BaseSreenState extends State<MenuPrincipal>
           const TelaCritica(),
           // const TelaMetas(),
           const TelaStatusPedido(),
-          // if (appAmbiente.usarEncerramentoDia) const TelaEncarramentoDia(),
+          const TelaMetas(),
           if (appAmbiente.usarConsultas) const TelaConsultas(),
 
           if (appAmbiente.usarCadastroCliente) const TelaClientes(),
