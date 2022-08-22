@@ -60,9 +60,7 @@ class _TelaProdutosState extends State<xTelaProdutos> {
     appAmbiente = AppAmbiente.of(context);
 
     WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
-      getList(appAmbiente.limitarResultados).then((value){
-        QueueAction.doLoop();
-      });
+      getList(appAmbiente.limitarResultados);
     });
   }
 
@@ -88,6 +86,7 @@ class _TelaProdutosState extends State<xTelaProdutos> {
         listProdutos = value;
       });
     });
+    Future.delayed(const Duration(seconds: 1)).then((value) => QueueAction.doLoop());
   }
 
   @override

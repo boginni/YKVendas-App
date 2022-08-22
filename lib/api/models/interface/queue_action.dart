@@ -28,6 +28,7 @@ abstract class QueueAction {
       return;
     }
 
+
     doingloop = true;
 
     await Future.delayed(const Duration(milliseconds: 100));
@@ -37,6 +38,7 @@ abstract class QueueAction {
       try {
         await obj.doTurn();
       } catch (e) {
+        print(e);
         printDebug('error type: ${e.runtimeType}');
       }
       removeListener(obj);

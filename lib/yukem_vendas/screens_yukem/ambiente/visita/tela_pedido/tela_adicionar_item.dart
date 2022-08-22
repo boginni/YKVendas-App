@@ -70,9 +70,7 @@ class _TelaAdicionarItemState extends State<TelaAdicionarItem>
         setState(() {
           totaisPedido = value;
           finishBuild = true;
-          getList().then((value) {
-            QueueAction.doLoop();
-          });
+          getList();
         });
       });
 
@@ -98,7 +96,9 @@ class _TelaAdicionarItemState extends State<TelaAdicionarItem>
           itens = value;
         });
       },
-    );
+    ).then((value){
+      QueueAction.doLoop();
+    });
   }
 
   @override

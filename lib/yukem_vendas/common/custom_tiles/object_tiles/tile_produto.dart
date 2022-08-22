@@ -49,6 +49,7 @@ class _TileProdutoState extends State<TileProduto> {
     final imageUrl =
         "${Internet.getHttpServer()}/image/${widget.ambiente}/${widget.produto.id}-icon.png";
 
+
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 8),
       child: Padding(
@@ -83,7 +84,7 @@ class _TileProdutoState extends State<TileProduto> {
               const SizedBox(
                 width: 8,
               ),
-              Flexible(flex: 5, child: TextNormal(widget.produto.nome))
+              Flexible(flex: 5, child: TextNormal('${widget.produto.id} ${widget.produto.nome}'))
             ],
           ),
         ),

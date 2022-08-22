@@ -46,6 +46,7 @@ class _CustomCachedImageState extends State<CustomCachedImage>
   File? imgFile;
 
   Future<File> getImagem() async {
+    lastImage = widget.name;
     first = false;
 
     final folder = (await pp.getTemporaryDirectory()).path;
@@ -82,7 +83,6 @@ class _CustomCachedImageState extends State<CustomCachedImage>
       imgFile.writeAsBytesSync(response.bodyBytes);
 
       if (widget.createThumb) {
-
         response = await get(Uri.parse(widget.iconLink), headers: {
           'Accept-Encoding': 'gzip, deflate, br',
           'Connection': 'keep-alive'
@@ -101,37 +101,49 @@ class _CustomCachedImageState extends State<CustomCachedImage>
   }
 
   @override
-  Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: widget.waitTurn || finished ? null : doTurn(),
-      builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-        if (onFail) {
-          return widget.failHorlder ?? Container();
-        }
-
-        if (finished) {
-          return Image.file(imgFile!);
-        }
-
-        return widget.placeHolder ?? const CircularProgressIndicator();
-      },
-    );
-  }
-
-  @override
   bool onTurn = false;
 
   @override
   void initState() {
     super.initState();
+    init();
+  }
+
+  Future<File?> getLocalImage() async {
+
+    lastImage = widget.name;
+    final ppp = await pp.getTemporaryDirectory();
+
+    final folder = ppp.path;
+    final path = '$folder/${widget.ambiente}';
+
+    final filePath = '$path/${widget.name}';
+
+    File imgFile = File(filePath);
+    if (imgFile.existsSync() && imgFile.lengthSync() > 200) {
+      complete = true;
+      return imgFile;
+    }
+  }
+
+  init() {
+    complete = false;
+    finished = false;
+    onFail = false;
     QueueAction.addListener(this);
   }
 
   bool finished = false;
   bool onFail = false;
+  bool complete = false;
+  String lastImage = '';
 
   @override
   Future<void> doTurn() async {
+    if (complete) {
+      return;
+    }
+
     onTurn = true;
 
     try {
@@ -141,8 +153,47 @@ class _CustomCachedImageState extends State<CustomCachedImage>
     }
 
     QueueAction.removeListener(this);
-    finished = true;
-    onTurn = false;
-    setState(() {});
+    setState(() {
+      finished = true;
+      onTurn = false;
+      outside = false;
+    });
+  }
+
+  bool outside = false;
+
+  @override
+  Widget build(BuildContext context) {
+    // print('${outside} && ${lastImage != widget.name}');
+
+    if (outside && lastImage != widget.name) {
+      finished = false;
+      onFail = false;
+      outside = false;
+
+      getLocalImage().then((value) {
+        if (value == null) {
+          init();
+          return;
+        }
+        setState(() {
+          finished = true;
+          outside = false;
+          imgFile = value;
+        });
+      });
+    }
+
+    outside = true;
+
+    if (onFail) {
+      return widget.failHorlder ?? Container();
+    }
+
+    if (finished) {
+      return Image.file(imgFile!);
+    }
+
+    return widget.placeHolder ?? const CircularProgressIndicator();
   }
 }
