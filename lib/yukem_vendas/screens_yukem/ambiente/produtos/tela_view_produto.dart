@@ -17,7 +17,9 @@ import '../../../models/database_objects/tabela_precos.dart';
 class TelaViewProduto extends StatefulWidget {
   static const routeName = '/telaViewProduto';
 
-  const TelaViewProduto({Key? key}) : super(key: key);
+  const TelaViewProduto({Key? key, required this.idProduto}) : super(key: key);
+
+  final int idProduto;
 
   @override
   State<StatefulWidget> createState() => _TelaViewProdutoState();
@@ -27,9 +29,28 @@ class _TelaViewProdutoState extends State<TelaViewProduto> {
   final _scrollCrontroller = ScrollController();
   TabelaPreco? tabela;
 
+  late ProdutoInfo produto;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+
+      getProdutoInfo(widget.idProduto).then((value) {
+        setState(() {
+          produto = value;
+          isLoading = false;
+        });
+      });
+
+    });
+  }
+
+  bool isLoading = true;
+
   @override
   Widget build(BuildContext context) {
-    final idProduto = ModalRoute.of(context)!.settings.arguments as int;
     final appUser = AppUser.of(context);
     final appAmbiente = AppAmbiente.of(context);
 
@@ -38,6 +59,8 @@ class _TelaViewProdutoState extends State<TelaViewProduto> {
     //     return;
     //   }
     // }
+
+
 
     return Scaffold(
       appBar: AppBar(
@@ -48,24 +71,16 @@ class _TelaViewProdutoState extends State<TelaViewProduto> {
           },
         ),
       ),
-      body: FutureBuilder(
-        future: getProdutoInfo(idProduto),
-        builder: (BuildContext context, AsyncSnapshot<ProdutoInfo?> snapshot) {
-          if (snapshot.data == null) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
+      body:
 
-          ProdutoInfo produto = snapshot.data!;
-
+      isLoading? const Center(
+        child: CircularProgressIndicator(),
+      ) : Builder(
+        builder: (context) {
           final imageUrl =
               "${Internet.getHttpServer()}/image/${appUser.ambiente}/${produto.id}.png";
           final iconUrl =
               "${Internet.getHttpServer()}/image/${appUser.ambiente}/${produto.id}-icon.png";
-
-          // var Estoque = produto.estoque;
-          // var Unidade = produto.unidade;
 
           return ListView(
             controller: _scrollCrontroller,
@@ -99,10 +114,14 @@ class _TelaViewProdutoState extends State<TelaViewProduto> {
                                 alignment: Alignment.topLeft,
                                 child: TextTitle(produto.nome),
                               ),
-                              const SizedBox(height: 12,),
+                              const SizedBox(
+                                height: 12,
+                              ),
                               TextSpamable(textList: [
                                 const TextTitle('Estoque: '),
-                                const SizedBox(width: 16,),
+                                const SizedBox(
+                                  width: 16,
+                                ),
                                 TextTitle(produto.estoque.toStringAsFixed(0))
                               ])
                             ],
@@ -178,7 +197,7 @@ class _TelaViewProdutoState extends State<TelaViewProduto> {
               Card(
                 child: Padding(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 2, vertical: 2),
+                  const EdgeInsets.symmetric(horizontal: 2, vertical: 2),
                   child: ListViewNested2(
                     title: const TextTitle('Preço por tabela'),
                     children: [
@@ -229,8 +248,8 @@ class _TelaViewProdutoState extends State<TelaViewProduto> {
               )
             ],
           );
-        },
-      ),
+        }
+      )
     );
   }
 }

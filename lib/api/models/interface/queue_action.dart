@@ -36,7 +36,9 @@ abstract class QueueAction {
     for (final obj in List.of(listeners)) {
       await Future.delayed(const Duration(milliseconds: 100));
       try {
-        await obj.doTurn();
+        if(listeners.contains(obj)){
+          await obj.doTurn();
+        }
       } catch (e) {
         print(e);
         printDebug('error type: ${e.runtimeType}');

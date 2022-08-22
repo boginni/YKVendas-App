@@ -1,5 +1,3 @@
-import 'dart:collection';
-
 import 'package:flutter/material.dart';
 import 'package:forca_de_vendas/api/models/interface/queue_action.dart';
 import 'package:forca_de_vendas/yukem_vendas/models/configuracao/app_ambiente.dart';
@@ -84,9 +82,17 @@ class _TelaProdutosState extends State<xTelaProdutos> {
         .then((value) {
       setState(() {
         listProdutos = value;
+        if (value.isNotEmpty) {
+          // print('doing loop');
+          Future.delayed(const Duration(seconds: 1)).then((value) {
+            QueueAction.doLoop();
+          });
+        } else {
+          QueueAction.clearListeners();
+          // print('denied loop');
+        }
       });
     });
-    Future.delayed(const Duration(seconds: 1)).then((value) => QueueAction.doLoop());
   }
 
   @override

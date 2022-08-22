@@ -106,11 +106,35 @@ class _CustomCachedImageState extends State<CustomCachedImage>
   @override
   void initState() {
     super.initState();
-    init();
+    if (widget.waitTurn) {
+      init();
+    } else {
+      WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+        getImagem().then((value) {
+          setState(() {
+            finished = true;
+            imgFile = value;
+            outside = false;
+          });
+        }).catchError((err) {
+
+          setState(() {
+            onFail = true;
+            outside = false;
+          });
+
+        });
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    QueueAction.removeListener(this);
   }
 
   Future<File?> getLocalImage() async {
-
     lastImage = widget.name;
     final ppp = await pp.getTemporaryDirectory();
 
@@ -164,9 +188,15 @@ class _CustomCachedImageState extends State<CustomCachedImage>
 
   @override
   Widget build(BuildContext context) {
-    // print('${outside} && ${lastImage != widget.name}');
+    final bool test = !outside && lastImage != widget.name;
 
-    if (outside && lastImage != widget.name) {
+    if (!widget.waitTurn && test) {
+      // print('=============');
+      // // print('${!outside} && ${lastImage != widget.name} = ${test}');
+      // print(widget.link);
+    }
+
+    if (test) {
       finished = false;
       onFail = false;
       outside = false;
@@ -177,6 +207,7 @@ class _CustomCachedImageState extends State<CustomCachedImage>
           return;
         }
         setState(() {
+          QueueAction.removeListener(this);
           finished = true;
           outside = false;
           imgFile = value;

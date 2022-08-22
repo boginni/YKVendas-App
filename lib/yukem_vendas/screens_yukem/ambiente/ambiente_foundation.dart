@@ -125,7 +125,6 @@ class _AmbienteFoundationState extends State<AmbienteFoundation> {
               TelaVisualizacaoVisita(),
           TelaNovoProduto.routeName: (context) => const TelaNovoProduto(),
           TelaNovoCliente.routeName: (context) => const TelaNovoCliente(),
-          TelaViewProduto.routeName: (context) => const TelaViewProduto(),
           TelaAdicionarItem.routeName: (context) => const TelaAdicionarItem(),
           MenuPrincipal.routeName: (context) => const MenuPrincipal(),
           TelaImportarProdutos.routeName: (context) =>

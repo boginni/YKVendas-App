@@ -42,7 +42,7 @@ class Application extends StatefulWidget {
     }
   }
 
-  static  navigate(
+  static Future navigate(
       BuildContext context, Widget screen, {Function? callback}) async {
     await Navigator.push(
         context, MaterialPageRoute(builder: (context) => screen)).then((value) {

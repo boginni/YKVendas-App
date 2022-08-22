@@ -5,6 +5,7 @@ import 'package:forca_de_vendas/api/common/custom_widgets/custom_text.dart';
 import 'package:forca_de_vendas/yukem_vendas/common/components/custom_cached_image.dart';
 
 import '../../../../api/models/database_objects/query_filter.dart';
+import '../../../app_foundation.dart';
 import '../../../models/database/database_ambiente.dart';
 import '../../../models/database_objects/produto.dart';
 import '../../../models/internet/internet.dart';
@@ -38,9 +39,10 @@ class _TileProdutoState extends State<TileProduto> {
 
   @override
   Widget build(BuildContext context) {
+
     viewProduto() {
-      Navigator.of(context)
-          .pushNamed(TelaViewProduto.routeName, arguments: widget.produto.id)
+      Application.navigate(
+              context, TelaViewProduto(idProduto: widget.produto.id))
           .then((value) {
         widget.onUpdate();
       });
@@ -48,7 +50,6 @@ class _TileProdutoState extends State<TileProduto> {
 
     final imageUrl =
         "${Internet.getHttpServer()}/image/${widget.ambiente}/${widget.produto.id}-icon.png";
-
 
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 8),
@@ -84,14 +85,16 @@ class _TileProdutoState extends State<TileProduto> {
               const SizedBox(
                 width: 8,
               ),
-              Flexible(flex: 5, child: TextNormal('${widget.produto.id} ${widget.produto.nome}'))
+              Flexible(
+                  flex: 5,
+                  child:
+                      TextNormal('${widget.produto.id} ${widget.produto.nome}'))
             ],
           ),
         ),
       ),
     );
   }
-
 
   Future<List<ProdutoListNormal>> getProdutos(
       {QueryFilter? queryFilter, bool limit = false}) async {
@@ -117,5 +120,3 @@ class _TileProdutoState extends State<TileProduto> {
     return list;
   }
 }
-
-
