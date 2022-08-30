@@ -124,9 +124,11 @@ class _BaseSreenState extends State<MenuPrincipal>
           if (appAmbiente.usarComissao) const TelaComissao(),
           if (appAmbiente.usarVendasTotais) const TelaVendasTotais(),
           const TelaVisitaConcluida(),
+          if(appAmbiente.usarTelaCritia)
           const TelaCritica(),
-          // const TelaMetas(),
+          if(appAmbiente.usarTelaStatusPedido)
           const TelaStatusPedido(),
+          if(appAmbiente.usarTelaMetas)
           const TelaMetas(),
           if (appAmbiente.usarConsultas) const TelaConsultas(),
 

@@ -1,4 +1,5 @@
 import 'package:forca_de_vendas/yukem_vendas/models/database_objects/tabela_precos.dart';
+import 'package:syncfusion_flutter_pdf/pdf.dart';
 
 import '../../../api/common/debugger.dart';
 import '../database/database_ambiente.dart';
@@ -61,6 +62,28 @@ class ProdutoListItem {
         editavel: value('EDITAVEL') == 1,
         valorTabela: douN('VALOR_TABELA'),
         valorOriginal: douN('VALOR_ORIGINAL'));
+  }
+
+  render(PdfGrid grid) {
+    final PdfGridRow row = grid.rows.add();
+    int i = 0;
+
+    add(dynamic value, {int d = 2}) {
+      if (value.runtimeType != String) {
+        value = value.toStringAsFixed(d);
+      }
+      row.cells[i++].value = value;
+    }
+
+    // dynamic b = brinde ? "Brinde" : quantidade * valorUnitario - descontoValor;
+
+    add('');
+    add(idProduto, d: 0);
+    add(nome);
+    add(valorTabela);
+    add(estoque, d: 0);
+    // add(peso);
+    // add(b);
   }
 
   ProdutoListItem(

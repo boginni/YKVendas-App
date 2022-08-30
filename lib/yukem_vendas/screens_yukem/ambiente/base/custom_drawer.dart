@@ -146,16 +146,19 @@ class CustomDrawerState extends State<CustomDrawer>
                 title: 'Visitas Finalizadas',
                 page: i++,
               ),
+              if(appAmbiente.usarTelaCritia)
               DrawerTile(
                 iconData: Icons.pie_chart,
                 title: 'Crítica Vendedor',
                 page: i++,
               ),
+              if(appAmbiente.usarTelaStatusPedido)
               DrawerTile(
                 iconData: CupertinoIcons.time,
                 title: 'Status Pedido',
                 page: i++,
               ),
+              if(appAmbiente.usarTelaMetas)
               DrawerTile(
                 iconData: Ionicons.bar_chart,
                 title: 'Metas',

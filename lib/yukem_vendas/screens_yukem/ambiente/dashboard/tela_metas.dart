@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:forca_de_vendas/api/common/custom_tiles/default_tiles/tile_spaced_text.dart';
 
 import '../../../../api/common/custom_widgets/custom_icons.dart';
 import '../../../../api/common/custom_widgets/custom_text.dart';
@@ -72,14 +73,37 @@ class _TelaState extends State<_Tela> {
 
   @override
   Widget build(BuildContext context) {
-    final list = ListView.builder(
-      shrinkWrap: true,
-      itemCount: itens.length,
-      itemBuilder: (context, index) {
-        final item = itens[index];
+    final list = SingleChildScrollView(
+      child: Column(
+        children: [
+          Card(
+            child: Column(
+              children: [
+                Center(
+                  child: Column(
+                    children: const [
+                      TextTitle('Agosto 2022'),
+                      TextNormal('01/08/2022 - 31/08/2022')
+                    ],
+                  ),
+                ),
+                TileSpacedText('Vendedor', ''),
+                TileSpacedText('Vendedor', ''),
+                TileSpacedText('Vendedor', ''),
+              ],
+            ),
+          ),
+          ListView.builder(
+            shrinkWrap: true,
+            itemCount: itens.length,
+            itemBuilder: (context, index) {
+              final item = itens[index];
 
-        return TileCritia(item: item);
-      },
+              return TileCritia(item: item);
+            },
+          ),
+        ],
+      ),
     );
 
     final carregando = Center(
@@ -115,15 +139,36 @@ class TileCritia extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    String round(dynamic x){
+      return double.parse(x.toString()).toStringAsFixed(2);
+    }
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 6),
-        child: Row(
+        child: ExpansionTile(
+          title: Row(
+            children: [
+              const IconNormal(
+                CupertinoIcons.cube_box,
+              ),
+              const SizedBox(width: 8,),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    TextNormal("${item[5]}"),
+                    TextNormal("${item[7]}/${item[6]}")
+                  ],
+                ),
+              ),
+              TextTitle(item[9].toString()),
+            ],
+          ),
           children: [
-            const IconNormal(
-              CupertinoIcons.cube_box,
-            ),
-            Expanded(child: TextNormal(item.toString())),
+            TileSpacedText('Tendencia Total', round(item[10])),
+            TileSpacedText('Tendencia Pct', '${round(item[11])}%'),
           ],
         ),
       ),

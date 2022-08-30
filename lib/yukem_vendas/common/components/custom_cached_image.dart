@@ -117,12 +117,10 @@ class _CustomCachedImageState extends State<CustomCachedImage>
             outside = false;
           });
         }).catchError((err) {
-
           setState(() {
             onFail = true;
             outside = false;
           });
-
         });
       });
     }
@@ -184,11 +182,13 @@ class _CustomCachedImageState extends State<CustomCachedImage>
     });
   }
 
-  bool outside = false;
+  bool outside = true;
 
   @override
   Widget build(BuildContext context) {
-    final bool test = !outside && lastImage != widget.name;
+    final bool test = outside && lastImage != widget.name;
+
+    // print('${outside} && ${lastImage != widget.name} = ${test}');
 
     if (!widget.waitTurn && test) {
       // print('=============');

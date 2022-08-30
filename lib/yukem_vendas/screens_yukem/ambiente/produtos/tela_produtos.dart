@@ -82,6 +82,7 @@ class _TelaProdutosState extends State<xTelaProdutos> {
         .then((value) {
       setState(() {
         listProdutos = value;
+
         if (value.isNotEmpty) {
           // print('doing loop');
           Future.delayed(const Duration(seconds: 1)).then((value) {
@@ -91,6 +92,7 @@ class _TelaProdutosState extends State<xTelaProdutos> {
           QueueAction.clearListeners();
           // print('denied loop');
         }
+
       });
     });
   }

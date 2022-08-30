@@ -241,9 +241,7 @@ class AppAmbiente {
         getBool('NOME FATURAMENTO COMO ORCAMENTO', false);
 
     limitarResultados = getBool('LIMITAR RESULTADOS DE PESQUISA', false);
-
     idPessoaOrcamento = getInt('ID PESSOA ORCAMENTO', 0);
-
     mostrarIconeProduto = getBool('MOSTRAR ICONE DO PRODUTO', false);
 
     descontoValor = getBool('DESCONTO EM VALOR', false);
@@ -279,6 +277,15 @@ class AppAmbiente {
 
     diasValidos = diasValidadeOrcamento;
 
+    usarTelaCritia = getBool('USAR TELA CRITICA', false);
+
+    usarTelaStatusPedido = getBool('USAR TELA STATUS PEDIDO', true);
+
+    usarTelaMetas = getBool('USAR TELA METAS', false);
+
+
+    print(getBool('USAR TELA METAS', false).toString() + 'USAR TELA METAS');
+
     //MOSTRAR TABELA
     // getBool('', false);
   }
@@ -293,7 +300,9 @@ class AppAmbiente {
   late bool usarEncerramentoDia;
   late bool usarConsultas;
   late bool usarBotaoComNota;
+
   late int firma;
+
   late bool usarFirma;
   late bool usarFaturamentoComoOrcamento;
   late bool buscaClientId;
@@ -303,16 +312,17 @@ class AppAmbiente {
   late bool todosClientesFaturamento;
 
   late bool usarIncluirVisitaAgenda;
-
   late bool permitirFormaPgNula;
-
   late bool usarBloqueioFormaPg;
 
   late int padraoFormaPagCadastro;
 
   late bool mostrarFormaPgCliente;
-
   late bool usarCancelamentoFaturamento;
+
+  late bool usarTelaMetas;
+  late bool usarTelaStatusPedido;
+  late bool usarTelaCritia;
 
   Map<String, Color> myColors = {
     '1': const Color.fromARGB(255, 4, 125, 141),
