@@ -66,14 +66,21 @@ class WebSocketHandler {
       await WebSocket.connect(wsServer)
           .timeout(const Duration(seconds: 20))
           .then((WebSocket ws) {
+            
+            
         printDebug('Websocket Pronto');
 
         _socket = ws;
         WebsocketEventListener.postStatus(false);
         toFinish = false;
+
+
         ws.listen((data) {
+          print(data);
+
           try {
             final msg = const JsonDecoder().convert(data);
+
 
             if (msg['name'] == 'fbEventList') {
               final data = msg['data'][ambiente];
@@ -101,7 +108,6 @@ class WebSocketHandler {
       });
     } catch (e) {
       printDebug(e.runtimeType.toString());
-
       reconect();
     }
   }

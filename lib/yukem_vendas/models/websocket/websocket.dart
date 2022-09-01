@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:forca_de_vendas/yukem_vendas/models/database/database_ambiente.dart';
 
 import '../../../api/common/components/mostrar_confirmacao.dart';
+import '../../../api/common/debugger.dart';
 import '../../../api/models/interface/realtime_sync.dart';
 import '../../screens_yukem/sync/sync_loader.dart';
 import '../../screens_yukem/sync/sync_request.dart';
@@ -24,6 +25,7 @@ class WebsockeEvent {
 
   static _updateDatabaseEventHandler(
       BuildContext context, String evn, Function() callBack) async {
+
     switch (evn) {
       case 'MOB_CONF_AMBIENTE_UPDATE':
         mostrarCaixaConfirmacao(context,
