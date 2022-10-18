@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:forca_de_vendas/api/models/interface/queue_action.dart';
 import 'package:forca_de_vendas/yukem_vendas/models/configuracao/app_ambiente.dart';
-import 'package:forca_de_vendas/yukem_vendas/screens_yukem/ambiente/base/moddel_screen.dart';
 
 import '../../../../api/common/custom_widgets/custom_text.dart';
 import '../../../../api/models/configuracao/app_system.dart';
@@ -11,20 +10,10 @@ import '../../../models/database_objects/produto.dart';
 import '../../../models/database_objects/totais_pedido.dart';
 import '../base/custom_drawer.dart';
 
-class TelaProdutos extends ModdelScreen {
+class TelaProdutos extends StatefulWidget {
   static const routeName = '/telaAdicionarItem';
 
   const TelaProdutos({Key? key}) : super(key: key);
-
-  @override
-  Widget getCustomScreen(BuildContext context) {
-    // TODO: implement getCustomScreen
-    return xTelaProdutos();
-  }
-}
-
-class xTelaProdutos extends StatefulWidget {
-  const xTelaProdutos({Key? key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _TelaProdutosState();
@@ -34,7 +23,7 @@ extension Numeric on String {
   bool get isNumeric => num.tryParse(this) != null ? true : false;
 }
 
-class _TelaProdutosState extends State<xTelaProdutos> {
+class _TelaProdutosState extends State<TelaProdutos> {
   TextEditingController controllerPesquisa = TextEditingController();
 
   bool reloadTotais = true;
@@ -51,7 +40,6 @@ class _TelaProdutosState extends State<xTelaProdutos> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     appSystem = AppSystem.of(context);
     appUser = AppUser.of(context);
@@ -92,7 +80,6 @@ class _TelaProdutosState extends State<xTelaProdutos> {
           QueueAction.clearListeners();
           // print('denied loop');
         }
-
       });
     });
   }
@@ -142,7 +129,8 @@ class _TelaProdutosState extends State<xTelaProdutos> {
               ),
             if (appAmbiente.limitarResultados)
               const Center(
-                  child: TextTitle('Limitando a no maximo 100 resultados')),
+                child: TextTitle('Limitando a no maximo 100 resultados'),
+              ),
             if (mostrarPesquisa) const Divider(),
             ListView.builder(
               shrinkWrap: true,

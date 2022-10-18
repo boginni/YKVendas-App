@@ -20,8 +20,9 @@ class ContainerDetalhesCategoria extends StatelessWidget {
     final appSystem = AppSystem.of(context);
 
     return FutureBuilder(
-      future: getProdutoInfo(idProduto),
+      future: ProdutoInfo.getData(idProduto),
       builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+
         if (snapshot.data == null) {
           return const Center(
             child: CircularProgressIndicator(),

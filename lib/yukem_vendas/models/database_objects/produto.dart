@@ -31,6 +31,7 @@ class ProdutoListNormal {
 }
 
 class ProdutoInfo {
+
   final int id;
   final String nome;
   final String descricao;
@@ -78,13 +79,13 @@ class ProdutoInfo {
         preco: Double('PRECO'),
         unidade: get('UNIDADE'));
   }
-}
 
-Future<ProdutoInfo> getProdutoInfo(int idProduto) async {
-  List<Map<String, dynamic>> maps = await DatabaseAmbiente.select(
-      'VW_PRODUTO_INFO',
-      where: 'ID_PRODUTO = ?',
-      whereArgs: [idProduto]);
+  static Future<ProdutoInfo> getData(int idProduto) async {
+    List<Map<String, dynamic>> maps = await DatabaseAmbiente.select(
+        'VW_PRODUTO_INFO',
+        where: 'ID_PRODUTO = ?',
+        whereArgs: [idProduto]);
 
-  return ProdutoInfo.fromMap(maps[0]);
+    return ProdutoInfo.fromMap(maps[0]);
+  }
 }

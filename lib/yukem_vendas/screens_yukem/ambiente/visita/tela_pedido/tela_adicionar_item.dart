@@ -89,13 +89,22 @@ class _TelaAdicionarItemState extends State<TelaAdicionarItem>
         idTabela: idTabela, filtros: filtrosProdutos!, limitar: false);
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+    RealTimeSync.removeListener(this);
+    QueueAction.clearListeners();
+  }
+
   Future getList() async {
-    getProdutoList(idVisita!,
-            idTabela: idTabela,
-            filtros: filtrosProdutos!,
-            limitar: AppAmbiente.of(context).limitarResultados)
-        .then(
+    getProdutoList(
+      idVisita!,
+      idTabela: idTabela,
+      filtros: filtrosProdutos!,
+      limitar: AppAmbiente.of(context).limitarResultados,
+    ).then(
       (value) {
+
         setState(() {
           itens = value;
         });
@@ -106,7 +115,6 @@ class _TelaAdicionarItemState extends State<TelaAdicionarItem>
           });
         } else {
           QueueAction.clearListeners();
-          // print('denied loop');
         }
       },
     );
@@ -135,196 +143,179 @@ class _TelaAdicionarItemState extends State<TelaAdicionarItem>
       });
     }
 
-    return WillPopScope(
-      onWillPop: () => _willPopCallback(),
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(nomeTabela),
-          centerTitle: false,
-          leading: BackButton(
-            onPressed: () {
-              Navigator.of(context).maybePop(context);
-            },
-          ),
-          actions: [
-            Padding(
-              padding: const EdgeInsets.only(right: 20),
-              child: InkWell(
-                onTap: () {
-                  final key = mostrarBarraProgressoCircular(context);
-                  Future.delayed(const Duration(milliseconds: 250))
-                      .then((value) {
-                    getListCatalogo().then((list) {
-                      gerarCatalogo(list)
-                          .then((value) => key.currentState!.finish());
-                    });
-                  });
-                },
-                child: const Icon(Icons.share, size: 26.0),
-              ),
-            ),
-          ],
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(nomeTabela),
+        centerTitle: false,
+        leading: BackButton(
+          onPressed: () {
+            Navigator.of(context).maybePop(context);
+          },
         ),
-        body: finishBuild
-            ? BodyFloatingBar(
-                barChildrens: [
-                  Builder(
-                    builder: (context) {
-                      double tot = 0;
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 20),
+            child: InkWell(
+              onTap: () {
+                final key = mostrarBarraProgressoCircular(context);
+                Future.delayed(const Duration(milliseconds: 250)).then((value) {
+                  getListCatalogo().then((list) {
+                    gerarCatalogo(list)
+                        .then((value) => key.currentState!.finish());
+                  });
+                });
+              },
+              child: const Icon(Icons.share, size: 26.0),
+            ),
+          ),
+        ],
+      ),
+      body: finishBuild
+          ? BodyFloatingBar(
+              barChildrens: [
+                Builder(
+                  builder: (context) {
+                    double tot = 0;
 
-                      if (totaisPedido != null) {
-                        tot = totaisPedido!.totalLiquido;
-                      }
+                    if (totaisPedido != null) {
+                      tot = totaisPedido!.totalLiquido;
+                    }
 
-                      return TextSpamable(
-                        textList: [
-                          const TextNormal('Total:'),
-                          TextDinheiroReal(valor: tot)
-                        ],
+                    return TextSpamable(
+                      textList: [
+                        const TextNormal('Total:'),
+                        TextDinheiroReal(valor: tot)
+                      ],
+                    );
+                  },
+                ),
+                ButtonSalvar(
+                    enabled: true,
+                    onPressed: () => Navigator.of(context).maybePop(context))
+              ],
+              child: ListView(
+                controller: _scrollController,
+                // physics: const ClampingScrollPhysics(),
+                children: [
+                  if (mostrarPesquisa)
+                    Card(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12.0, vertical: 6.0),
+                        child: filtrosProdutos != null
+                            ? Column(
+                                children: [
+                                  const Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: TextTitle('CATEGORIA'),
+                                  ),
+                                  ExpansionTile(
+                                    maintainState: true,
+                                    title: const Text('Categorias'),
+                                    children: [
+                                      TileCategoria(
+                                        table: 'VW_CATEGORIA_DEPARTAMENTO',
+                                        hint: 'Departamento',
+                                        startValue:
+                                            filtrosProdutos!.departamento,
+                                        onChange: (int? i) {
+                                          filtrosProdutos!.departamento = i;
+
+                                          if (appSystem.usarPesquisaDinamica) {
+                                            update();
+                                          }
+                                        },
+                                      ),
+                                      TileCategoria(
+                                        table: 'VW_CATEGORIA_GRUPO',
+                                        hint: 'Grupo',
+                                        startValue: filtrosProdutos!.grupo,
+                                        onChange: (int? i) {
+                                          filtrosProdutos!.grupo = i;
+                                          if (appSystem.usarPesquisaDinamica) {
+                                            update();
+                                          }
+                                        },
+                                      ),
+                                      TileCategoria(
+                                        table: 'VW_CATEGORIA_SUB_GRUPO',
+                                        hint: 'SubGrupo',
+                                        startValue: filtrosProdutos!.subgrupo,
+                                        onChange: (int? i) {
+                                          filtrosProdutos!.subgrupo = i;
+                                          if (appSystem.usarPesquisaDinamica) {
+                                            update();
+                                          }
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        flex: 5,
+                                        child: TextFormField(
+                                          controller: controllerPesquisa,
+                                          decoration: const InputDecoration(
+                                              fillColor: Colors.white,
+                                              filled: true,
+                                              hintText:
+                                                  "ID, GTIN ou Nome do Produto"),
+                                          style: textNormalStyle(appSystem),
+                                          onChanged: (x) {
+                                            if (appSystem
+                                                .usarPesquisaDinamica) {
+                                              update();
+                                            }
+                                          },
+                                        ),
+                                      ),
+                                      Expanded(
+                                        flex: 1,
+                                        child: InkWell(
+                                          onTap: () {
+                                            lerQRCode();
+                                            if (appSystem
+                                                .usarPesquisaDinamica) {
+                                              update();
+                                            }
+                                          },
+                                          child: const IconSmall(Icons.qr_code),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                  ButtonPesquisar(onPressed: () {
+                                    update();
+                                  })
+                                ],
+                              )
+                            : Container(),
+                      ),
+                    ),
+                  if (mostrarPesquisa) const Divider(),
+                  ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: itens.length,
+                    physics: const ClampingScrollPhysics(),
+                    itemBuilder: (context, index) {
+                      return TileItemPedido(
+                        itens[index],
+                        afterClick: (newItem) {
+                          itens[index] = newItem;
+                          reloadTotais();
+                        },
                       );
                     },
                   ),
-                  ButtonSalvar(
-                      enabled: true,
-                      onPressed: () => Navigator.of(context).maybePop(context))
+                  const SizedBox(
+                    height: 64,
+                  )
                 ],
-                child: ListView(
-                  controller: _scrollController,
-                  // physics: const ClampingScrollPhysics(),
-                  children: [
-                    if (mostrarPesquisa)
-                      Card(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 12.0, vertical: 6.0),
-                          child: filtrosProdutos != null
-                              ? Column(
-                                  children: [
-                                    const Align(
-                                      alignment: Alignment.centerLeft,
-                                      child: TextTitle('CATEGORIA'),
-                                    ),
-                                    ExpansionTile(
-                                      maintainState: true,
-                                      title: const Text('Categorias'),
-                                      children: [
-                                        TileCategoria(
-                                          table: 'VW_CATEGORIA_DEPARTAMENTO',
-                                          hint: 'Departamento',
-                                          startValue:
-                                              filtrosProdutos!.departamento,
-                                          onChange: (int? i) {
-                                            filtrosProdutos!.departamento = i;
-
-                                            if (appSystem
-                                                .usarPesquisaDinamica) {
-                                              update();
-                                            }
-                                          },
-                                        ),
-                                        TileCategoria(
-                                          table: 'VW_CATEGORIA_GRUPO',
-                                          hint: 'Grupo',
-                                          startValue: filtrosProdutos!.grupo,
-                                          onChange: (int? i) {
-                                            filtrosProdutos!.grupo = i;
-                                            if (appSystem
-                                                .usarPesquisaDinamica) {
-                                              update();
-                                            }
-                                          },
-                                        ),
-                                        TileCategoria(
-                                          table: 'VW_CATEGORIA_SUB_GRUPO',
-                                          hint: 'SubGrupo',
-                                          startValue: filtrosProdutos!.subgrupo,
-                                          onChange: (int? i) {
-                                            filtrosProdutos!.subgrupo = i;
-                                            if (appSystem
-                                                .usarPesquisaDinamica) {
-                                              update();
-                                            }
-                                          },
-                                        ),
-                                      ],
-                                    ),
-                                    Row(
-                                      children: [
-                                        Expanded(
-                                          flex: 5,
-                                          child: TextFormField(
-                                            controller: controllerPesquisa,
-                                            decoration: const InputDecoration(
-                                                fillColor: Colors.white,
-                                                filled: true,
-                                                hintText:
-                                                    "ID, GTIN ou Nome do Produto"),
-                                            style: textNormalStyle(appSystem),
-                                            onChanged: (x) {
-                                              if (appSystem
-                                                  .usarPesquisaDinamica) {
-                                                update();
-                                              }
-                                            },
-                                          ),
-                                        ),
-                                        Expanded(
-                                          flex: 1,
-                                          child: InkWell(
-                                            onTap: () {
-                                              lerQRCode();
-                                              if (appSystem
-                                                  .usarPesquisaDinamica) {
-                                                update();
-                                              }
-                                            },
-                                            child:
-                                                const IconSmall(Icons.qr_code),
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                    ButtonPesquisar(onPressed: () {
-                                      update();
-                                    })
-                                  ],
-                                )
-                              : Container(),
-                        ),
-                      ),
-                    if (mostrarPesquisa) const Divider(),
-                    ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: itens.length,
-                      physics: const ClampingScrollPhysics(),
-                      itemBuilder: (context, index) {
-                        return TileItemPedido(
-                          itens[index],
-                          afterClick: (newItem) {
-                            itens[index] = newItem;
-                            reloadTotais();
-                          },
-                        );
-                      },
-                    ),
-                    const SizedBox(
-                      height: 64,
-                    )
-                  ],
-                ),
-              )
-            : const Center(child: CircularProgressIndicator()),
-      ),
+              ),
+            )
+          : const Center(child: CircularProgressIndicator()),
     );
-  }
-
-  Future<bool> _willPopCallback() async {
-    // await showDialog or Show add banners or whatever
-    // then
-
-    RealTimeSync.removeListener(this);
-    QueueAction.clearListeners();
-    return true;
   }
 
   @override

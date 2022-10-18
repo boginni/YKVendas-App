@@ -10,7 +10,6 @@ import '../../../../api/common/components/list_scrollable.dart';
 import '../../../../api/common/components/mostrar_confirmacao.dart';
 import '../../../../api/common/custom_widgets/custom_buttons.dart';
 import '../../../../api/common/custom_widgets/custom_text.dart';
-import '../../../../api/common/custom_widgets/floating_bar.dart';
 import '../../../models/database_objects/cliente.dart';
 import 'containers/cadastro.dart';
 import 'containers/cadastro_basico.dart';
@@ -20,7 +19,9 @@ import 'containers/endereco.dart';
 class TelaNovoCliente extends StatefulWidget {
   static const routeName = '/telaNovoCliente';
 
-  const TelaNovoCliente({Key? key}) : super(key: key);
+  const TelaNovoCliente({Key? key, this.idPessoa}) : super(key: key);
+
+  final int? idPessoa;
 
   @override
   State<StatefulWidget> createState() => TelaNovoClienteState();
@@ -38,60 +39,58 @@ class TelaNovoClienteState extends State<TelaNovoCliente> {
     }
   }
 
-  // bool exp
   bool editable = true;
-
   bool toLoad = true;
-
   Cliente cliente = Cliente();
-
   Map<int, ConfigCampo> config = {};
-
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
-  // late AnimationController controller;
+  setup() async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    config = await ConfigCampo.getList();
 
-  // @override
-  // void initState() {
-  //   controller = AnimationController(
-  //     // vsync: this,
-  //     duration: const Duration(seconds: 2), vsync: this,
-  //   );
-  //
-  //   super.initState();
-  // }
+    if (widget.idPessoa == null || !toLoad) {
+      setState(() {
+        onLoading = false;
+      });
+      return;
+    }
+
+    toLoad = false;
+
+
+    Cliente? c = await Cliente.getCliente(widget.idPessoa!);
+
+    if (c == null) {
+      return;
+    }
+
+    if (c.idCidade != null) {
+      final maps = await DatabaseAmbiente.select('PRE_CIDADE',
+          where: 'ID = ?', whereArgs: [c.idCidade]);
+      c.idUf = maps[0]['ID_UF'];
+    }
+
+    setState(() {
+      cliente = c;
+      onLoading = false;
+    });
+  }
+
+  bool onLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+      setup();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    int? idPessoa = ModalRoute.of(context)!.settings.arguments as int?;
-
-    if (idPessoa != null) {
+    if (widget.idPessoa != null) {
       editable = false;
-    }
-
-    setup() async {
-      await Future.delayed(const Duration(milliseconds: 500));
-      config = await ConfigCampo.getList();
-
-      if (idPessoa == null || !toLoad) {
-        return;
-      }
-
-      toLoad = false;
-
-      Cliente? c = await Cliente.getCliente(idPessoa);
-
-      if (c == null) {
-        return;
-      }
-
-      if (c.idCidade != null) {
-        final maps = await DatabaseAmbiente.select('PRE_CIDADE',
-            where: 'ID = ?', whereArgs: [c.idCidade]);
-        c.idUf = maps[0]['ID_UF'];
-      }
-      cliente = c;
-
     }
 
     salvar() async {
@@ -200,149 +199,105 @@ class TelaNovoClienteState extends State<TelaNovoCliente> {
           },
         ),
       ),
-      body: FutureBuilder(
-          future: setup(),
-          builder: (context, AsyncSnapshot<dynamic> snapshot) {
-            if (snapshot.connectionState != ConnectionState.done) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            }
+      body: onLoading
+          ? const Center(
+              child: CircularProgressIndicator(),
+            )
+          : Form(
+              key: formKey,
+              child: Provider<Map<int, ConfigCampo>>(
+                create: (BuildContext context) {
+                  return config;
+                },
+                child: ListView(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  children: [
+                    /// OPÇÕES
+                    Cadastro(
+                        cliente: cliente,
+                        expanded: true,
+                        onExpansionChanged: (b) {
+                          // salvarCliente();
+                        },
+                        update: () {
+                          formKey.currentState!.save();
+                          setState(() {});
+                        },
+                        editable: editable,
+                        pessoaJuridica: cliente.pessoaJuridica),
 
-            return BodyFloatingBar(
-              child: Form(
-                key: formKey,
-                child: ContainerForm(
-                  cliente: cliente,
-                  config: config,
-                  formKey: formKey,
+                    CadastroBasico(
+                      cliente: cliente,
+                      expanded: true,
+                      onExpansionChanged: (b) {
+                        // salvarCliente();
+                        // cadastroBasicoExpanded = b;
+                      },
+                      update: () {
+                        // widget.formKey.currentState!.save();
+                        setState(() {});
+                      },
+                      editable: editable,
+                      pessoaJuridica: cliente.pessoaJuridica,
+                    ),
+
+                    Contato(
+                        cliente: cliente,
+                        expanded: true,
+                        onExpansionChanged: (b) {
+                          // salvarCliente();
+                          // contatoExpanded = b;
+                        },
+                        editable: editable),
+
+                    Endereco(
+                        cliente: cliente,
+                        expanded: true,
+                        onExpansionChanged: (b) {
+                          // salvarCliente();
+                          // enderecoExpanded = b;
+                        },
+                        editable: editable),
+
+                    /// EXTRA
+                    Card(
+                      margin: const EdgeInsets.only(
+                          left: 2, right: 2, top: 2, bottom: 64),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 2, horizontal: 6),
+                        child: ListViewNested(
+                          children: [
+                            const SizedBox(
+                              height: 16,
+                            ),
+                            const TextTitle('Observação'),
+                            ConfigCampAdapter(
+                              onSaved: (text, x) {
+                                if (text != null) {
+                                  cliente.obs = text;
+                                }
+                              },
+                              limit: 300,
+                              label: 'Obs',
+                              configId: 23,
+                              value: cliente.obs,
+                              editavel: editable,
+                            ),
+                            const SizedBox(
+                              height: 8,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              barChildrens: [
-                if (true)
-                  ButtonSalvar(
-                    enabled: true,
-                    onPressed: onPressed,
-                  )
-              ],
-            );
-          }),
-    );
-  }
-}
-
-class ContainerForm extends StatefulWidget {
-  const ContainerForm(
-      {Key? key,
-      required this.cliente,
-      required this.formKey,
-      required this.config})
-      : super(key: key);
-  final Cliente cliente;
-  final GlobalKey<FormState> formKey;
-  final Map<int, ConfigCampo> config;
-
-  @override
-  State<ContainerForm> createState() => _ContainerFormState();
-}
-
-class _ContainerFormState extends State<ContainerForm> {
-  bool cadastroBasicoExpanded = true;
-  bool contatoExpanded = true;
-  bool enderecoExpanded = true;
-
-  @override
-  Widget build(BuildContext context) {
-
-
-    final editable = widget.cliente.idSync == null;
-    // printDebug("${widget.cliente.idSync} != null : ${editable}");
-    return Provider<Map<int, ConfigCampo>>(
-      create: (BuildContext context) {
-        return widget.config;
-      },
-      child: ListView(
-        padding: const EdgeInsets.symmetric(horizontal: 8),
-        children: [
-          /// OPÇÕES
-          Cadastro(
-              cliente: widget.cliente,
-              expanded: true,
-              onExpansionChanged: (b) {
-                // salvarCliente();
-              },
-              update: () {
-                widget.formKey.currentState!.save();
-                setState(() {});
-              },
-              editable: editable,
-              pessoaJuridica: widget.cliente.pessoaJuridica),
-
-          CadastroBasico(
-            cliente: widget.cliente,
-            expanded: cadastroBasicoExpanded,
-            onExpansionChanged: (b) {
-              // salvarCliente();
-              // cadastroBasicoExpanded = b;
-            },
-            update: () {
-              // widget.formKey.currentState!.save();
-              setState(() {});
-            },
-            editable: editable,
-            pessoaJuridica: widget.cliente.pessoaJuridica,
-          ),
-
-          Contato(
-              cliente: widget.cliente,
-              expanded: contatoExpanded,
-              onExpansionChanged: (b) {
-                // salvarCliente();
-                // contatoExpanded = b;
-              },
-              editable: editable),
-
-          Endereco(
-              cliente: widget.cliente,
-              expanded: enderecoExpanded,
-              onExpansionChanged: (b) {
-                // salvarCliente();
-                // enderecoExpanded = b;
-              },
-              editable: editable),
-
-          /// EXTRA
-          Card(
-            margin:
-                const EdgeInsets.only(left: 2, right: 2, top: 2, bottom: 64),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 6),
-              child: ListViewNested(
-                children: [
-                  const SizedBox(
-                    height: 16,
-                  ),
-                  const TextTitle('Observação'),
-                  ConfigCampAdapter(
-                    onSaved: (text, x) {
-                      if (text != null) {
-                        widget.cliente.obs = text;
-                      }
-                    },
-                    limit: 300,
-                    label: 'Obs',
-                    configId: 23,
-                    value: widget.cliente.obs,
-                    editavel: editable,
-                  ),
-                  const SizedBox(
-                    height: 8,
-                  ),
-                ],
-              ),
             ),
-          ),
-        ],
+      bottomNavigationBar: ButtonSalvar(
+        enabled: true,
+        onPressed: onPressed,
       ),
     );
   }

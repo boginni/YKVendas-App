@@ -6,7 +6,6 @@ import 'package:provider/provider.dart';
 
 import '../../../../../api/common/components/list_scrollable.dart';
 import '../../../../../api/common/custom_widgets/custom_text.dart';
-import '../../../../../api/common/form_field/custom_input_field.dart';
 import '../../../../../api/common/form_field/database_fields.dart';
 import '../../../../../api/helpers/custom_formatters.dart';
 import '../../../../models/configuracao/app_ambiente.dart';
@@ -44,11 +43,11 @@ class _EnderecoState extends State<Endereco> {
     final formatter = CustomFormatters();
     final app = AppAmbiente.of(context);
 
-
     final list = Provider.of<Map<int, ConfigCampo>>(context);
     final configUF = list[16]!;
     final configCidade = list[17]!;
 
+    final cidadeKey = GlobalKey<DropdownSavedState>();
 
     return Card(
       margin: defaultMargin,
@@ -68,11 +67,12 @@ class _EnderecoState extends State<Endereco> {
                     startValue: widget.cliente.idUf,
                     onChange: (x) {
                       setState(() {});
-
                       if (x != null) {
                         widget.cliente.idUf = x;
                         widget.cliente.idCidade = null;
                       }
+
+                      cidadeKey.currentState!.loadList();
                     },
                     hint: 'UF',
                     editable: widget.editable || configUF.editavel,
@@ -85,16 +85,22 @@ class _EnderecoState extends State<Endereco> {
                   flex: 2,
                   child: DropdownSaved(
                     DropdownSaved.cidade,
+                    key: cidadeKey,
                     startValue: widget.cliente.idCidade,
-                    where: widget.cliente.idUf  != null ? "ID_UF = ?" : null,
-                    whereArgs: [widget.cliente.idUf],
+                    where:
+                        widget.cliente.idUf != null ? "ID_UF = ?" : "ID_UF = 0",
+                    whereArgs: widget.cliente.idUf != null
+                        ? [widget.cliente.idUf]
+                        : [],
                     onChange: (x) {
                       if (x != null) {
                         widget.cliente.idCidade = x;
                       }
                     },
                     hint: 'Cidade',
-                    editable: widget.editable || configCidade.editavel || configUF.editavel,
+                    editable: widget.editable ||
+                        configCidade.editavel ||
+                        configUF.editavel,
                   ),
                 ),
               ],
@@ -120,7 +126,7 @@ class _EnderecoState extends State<Endereco> {
                     },
                     label: 'Logradouro',
                     limit: 300,
-                    editavel: widget.editable ,
+                    editavel: widget.editable,
                   ),
                 ),
 
@@ -172,9 +178,7 @@ class _EnderecoState extends State<Endereco> {
 
                       lastSearch = cep;
                     },
-                    validator: (String? text){
-
-                    },
+                    validator: (String? text) {},
                     label: 'CEP',
                     limit: 20,
                     keyboardType: formatter.keyboard_numero,
@@ -197,9 +201,7 @@ class _EnderecoState extends State<Endereco> {
               onChange: (String? text, String? maskedText) {
                 widget.cliente.complementoLogadouro = text;
               },
-              validator: (String? text){
-
-              },
+              validator: (String? text) {},
               label: 'Complemento Logradouro',
               limit: 300,
               editavel: widget.editable,
@@ -223,9 +225,7 @@ class _EnderecoState extends State<Endereco> {
                     onChange: (String? text, String? maskedText) {
                       widget.cliente.bairro = text;
                     },
-                    validator: (String? text){
-
-                    },
+                    validator: (String? text) {},
                     label: 'Bairro',
                     limit: 300,
                     editavel: widget.editable,
@@ -247,9 +247,7 @@ class _EnderecoState extends State<Endereco> {
                     onChange: (String? text, String? maskedText) {
                       widget.cliente.numero = text;
                     },
-                    validator: (String? text){
-
-                    },
+                    validator: (String? text) {},
                     label: 'Número',
                     limit: 10,
                     editavel: widget.editable,

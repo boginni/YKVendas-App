@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:forca_de_vendas/yukem_vendas/app_foundation.dart';
 import 'package:forca_de_vendas/yukem_vendas/models/configuracao/app_user.dart';
 import 'package:forca_de_vendas/yukem_vendas/models/internet/sync_manager.dart';
-import 'package:forca_de_vendas/yukem_vendas/screens_yukem/ambiente/base/moddel_screen.dart';
 import 'package:forca_de_vendas/yukem_vendas/screens_yukem/ambiente/clientes/container_cliente_selector.dart';
 
 import '../../../../api/common/debugger.dart';
@@ -9,7 +9,7 @@ import '../../../models/internet/sync_cliente.dart';
 import '../base/custom_drawer.dart';
 import 'novo_cliente.dart';
 
-class TelaClientes extends ModdelScreen {
+class TelaClientes extends StatefulWidget {
   const TelaClientes({Key? key}) : super(key: key);
 
   static List<Widget> getActionButtons(BuildContext context,
@@ -32,6 +32,7 @@ class TelaClientes extends ModdelScreen {
           child: const Icon(Icons.person_add_outlined),
         ),
       ),
+
       /**
        * Syncronizar
        */
@@ -49,22 +50,14 @@ class TelaClientes extends ModdelScreen {
   }
 
   @override
-  Widget getCustomScreen(BuildContext context) {
-    return const xTelaClientes();
-  }
+  State<TelaClientes> createState() => _TelaClientesState();
 }
 
-class xTelaClientes extends StatefulWidget {
-  const xTelaClientes({Key? key}) : super(key: key);
+class _TelaClientesState extends State<TelaClientes> {
+  final key = GlobalKey<ContainerClienteSelectorState>();
 
-  @override
-  State<StatefulWidget> createState() => _TelaClientesState();
-}
-
-class _TelaClientesState extends State<xTelaClientes> {
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Scaffold(
       appBar: AppBar(
         title: const Text('Clientes'),
@@ -73,26 +66,30 @@ class _TelaClientesState extends State<xTelaClientes> {
       ),
       drawer: const CustomDrawer(),
       body: ContainerClienteSelector(
+        key: key,
         idVendedor: AppUser.of(context).vendedorAtual,
         onPressed: (cliente) {
-          Navigator.of(context)
-              .pushNamed(TelaNovoCliente.routeName, arguments: cliente.id)
-              .then((value) {
-            if (value == true) {
-              setState(() {
-                try {
-                  SyncClientes.syncClientes(context).then((value) {
-                    if (value) {
-                      setState(() {});
-                    }
-                  });
-                } catch (e) {
-                  printDebug(e.toString());
+          Application.navigate(
+            context,
+            TelaNovoCliente(
+              idPessoa: cliente.id,
+            ),
+          ).then((value) {
+            try {
+              if (value == true) {
+                key.currentState!.getData();
+              }
+
+              SyncClientes.syncClientes(context).then((value) {
+                if (value) {
+                  key.currentState!.getData();
                 }
               });
+            } catch (e) {
+              printDebug(e.toString());
             }
 
-            // setState(() {});
+            if (value == true) {}
           });
         },
       ),

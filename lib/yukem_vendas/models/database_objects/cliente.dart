@@ -184,6 +184,7 @@ class Cliente {
         where: args, whereArgs: param, orderBy: order);
 
     final list = _getList(maps);
+
     return list;
   }
 

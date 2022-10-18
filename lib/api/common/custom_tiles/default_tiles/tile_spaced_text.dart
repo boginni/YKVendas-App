@@ -48,9 +48,10 @@ class TileSpacedWidget extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
         Flexible(
-            child: TextNormal(
-          title,
-        )),
+          child: TextNormal(
+            title,
+          ),
+        ),
         if (forcedSpace != null)
           SizedBox(
             width: forcedSpace,

@@ -21,17 +21,14 @@ abstract class Internet {
 
   static int awaitTime = 15;
 
-
-  static setPortIn(newPortIn){
-
+  static setPortIn(newPortIn) {
     _portIn = newPortIn;
-
   }
 
   static setURl(String server, String newPortOut, String newPortIn) {
     _hostName = server;
     _portOut = newPortOut;
-    _portIn = newPortIn;
+    _portIn = newPortOut;
   }
 
   static String getDefaultHttpServer({bool input = false}) {
@@ -93,7 +90,7 @@ abstract class Internet {
       headers.addAll(appUser.toHeaders());
     }
 
-    String urlRequest = '${getHttpServer(input: inputServer)}/$path';
+    String urlRequest = '${getHttpServer(input: false)}/$path';
 
     try {
       late final Response res;
@@ -107,13 +104,13 @@ abstract class Internet {
 
       if (res.statusCode == 403) {
         if (!ignoreFirbidden) {
-          mostrarCaixaConfirmacao(context,
-              mostrarCancelar: false,
-              title: 'Sessão Inválida',
-              content:
-                  'Você precisa logar novamente para continuar sincronizado');
+          mostrarCaixaConfirmacao(
+            context,
+            mostrarCancelar: false,
+            title: 'Sessão Inválida',
+            content: 'Você precisa logar novamente para continuar sincronizado',
+          );
         }
-
         throw Forbidden();
       }
 

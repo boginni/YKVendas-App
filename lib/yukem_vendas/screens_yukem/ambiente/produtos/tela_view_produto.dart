@@ -37,7 +37,7 @@ class _TelaViewProdutoState extends State<TelaViewProduto> {
     super.initState();
     WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
 
-      getProdutoInfo(widget.idProduto).then((value) {
+      ProdutoInfo.getData(widget.idProduto).then((value) {
         setState(() {
           produto = value;
           isLoading = false;

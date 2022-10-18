@@ -53,106 +53,97 @@ class DropdownSaved extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => _DropdownSavedState();
+  State<StatefulWidget> createState() => DropdownSavedState();
 }
 
-class _DropdownSavedState extends State<DropdownSaved> {
-  List<_DropdownSavedValue> list = [];
-  bool toSearch = true;
-
-  int? currentValue;
-  bool localRebuild = false;
+class DropdownSavedState extends State<DropdownSaved> {
+  List<_DropdownSavedValue> _list = [];
+  _DropdownSavedValue? currentSelected;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+      loadList();
+    });
+  }
+
+  Future loadList() async {
+    try {
+      late final List<Map<String, dynamic>> maps;
+      if (widget.where == null || widget.whereArgs == null) {
+        maps = await DatabaseAmbiente.select(widget.table);
+      } else {
+        maps = await DatabaseAmbiente.select(
+          widget.table,
+          where: widget.where,
+          whereArgs: widget.whereArgs,
+        );
+      }
+
+      setState(() {
+        _list = List.generate(maps.length, (i) {
+          final item = _DropdownSavedValue(
+            maps[i]['ID'],
+            nome: maps[i]['NOME'],
+          );
+
+          if (maps[i]['ID'] == widget.startValue) {
+            currentSelected = item;
+          }
+
+          return item;
+        });
+      });
+    } catch (e) {
+      printDebug(e.toString());
+    }
+  }
+
+  update(final _DropdownSavedValue? item) {
+    setState(() {
+      currentSelected = item;
+    });
+
+    widget.onChange(item!.id);
   }
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-
     AppSystem appSystem = AppSystem.of(context);
 
-    if (!localRebuild) {
-      currentValue = widget.startValue;
-    }
-    localRebuild = false;
-
-    bool test = currentValue == null || list.isEmpty;
-    _DropdownSavedValue? value =
-        test ? null : _DropdownSavedValue(currentValue!);
-
-    Future<List<_DropdownSavedValue>> getList() async {
-      try {
-        late final List<Map<String, dynamic>> maps;
-
-        if (widget.where == null || widget.whereArgs == null) {
-          maps = await DatabaseAmbiente.select(widget.table);
-        } else {
-          maps = await DatabaseAmbiente.select(widget.table,
-              where: widget.where, whereArgs: widget.whereArgs);
-        }
-
-        list = List.generate(maps.length, (i) {
-          final tp = _DropdownSavedValue(maps[i]['ID'], nome: maps[i]['NOME']);
-          if (maps[i]['ID'] == currentValue) {
-            value = tp;
-          }
-          return tp;
-        });
-      } catch (e) {
-        printDebug(e.toString());
-      }
-
-      return list;
+    if (!widget.editable) {
+      return TextField(
+        readOnly: true,
+        controller: TextEditingController(text: currentSelected.toString()),
+        style: textTitlelStyle(appSystem),
+        enabled: false,
+        decoration: InputDecoration(
+          label: Text(
+            widget.hint,
+            style: TextStyle(fontSize: 12),
+          ),
+          isDense: true,
+          // contentPadding: EdgeInsets.all(8),
+        ),
+      );
     }
 
-    update(final _DropdownSavedValue? item) {
-      setState(() {
-        localRebuild = true;
-        currentValue = item!.id;
-      });
-
-      widget.onChange(item!.id);
-    }
-
-    return FutureBuilder(
-      future: toSearch ? getList() : null,
-      builder: (BuildContext context,
-          AsyncSnapshot<List<_DropdownSavedValue>?> snapshot) {
-        ///Causava Bugs
-        // toSearch = false;
-
-        if (snapshot.data != null) {
-          list = snapshot.data!;
-        }
-
-        if (!widget.editable) {
-          return TextFormField(
-            controller: TextEditingController()..text = value.toString(),
-            style: textTitlelStyle(appSystem),
-            enabled: false,
-            decoration: defaultInputDecoration(),
-          );
-        }
-
-        return DropdownButton<_DropdownSavedValue>(
-          value:
-              snapshot.connectionState != ConnectionState.done ? null : value,
-          items: list.map((_DropdownSavedValue item) {
-            return DropdownMenuItem<_DropdownSavedValue>(
-              value: item,
-              child: TextNormal(item.toString()),
-            );
-          }).toList(),
-          onChanged: (item) {
-            if (widget.editable) update(item);
-          },
-          hint: TextNormal(widget.hint),
-          isExpanded: true,
+    return DropdownButton<_DropdownSavedValue>(
+      value: currentSelected,
+      items: _list.map((_DropdownSavedValue item) {
+        return DropdownMenuItem<_DropdownSavedValue>(
+          value: item,
+          child: TextNormal(
+            item.toString(),
+          ),
         );
+      }).toList(),
+      onChanged: (item) {
+        update(item);
       },
+      hint: TextNormal(widget.hint),
+      isExpanded: true,
     );
   }
 }

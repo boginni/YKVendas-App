@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:forca_de_vendas/api/common/custom_tiles/default_tiles/tile_spaced_text.dart';
+import 'package:forca_de_vendas/yukem_vendas/screens_yukem/ambiente/dashboard/tiles/tile_meta_item.dart';
 
-import '../../../../api/common/custom_widgets/custom_icons.dart';
 import '../../../../api/common/custom_widgets/custom_text.dart';
 import '../../../../api/common/formatter/date_time_formatter.dart';
 import '../../../models/configuracao/app_user.dart';
@@ -33,76 +33,95 @@ class _Tela extends StatefulWidget {
 
 class _TelaState extends State<_Tela> {
   bool isLoading = true;
+
   List<dynamic> itens = [];
+  Map<String, dynamic> header = {};
+
+  void getData() {
+    final curTime = DateTime.now();
+    final time = DateFormatter.databaseDate.format(curTime);
+
+    final body = {
+      "id_vendedor": AppUser.of(context).vendedorAtual,
+      "data_inicio": time,
+      "data_fim": time
+    };
+
+    Internet.serverPost('dash/meta/vendedor/', context: context, body: body)
+        .then((value) {
+      if (value.statusCode != 200) {
+        return;
+      }
+
+      setState(() {
+        isLoading = false;
+        itens = const JsonDecoder().convert(value.body)['rows'];
+        header = const JsonDecoder().convert(value.body)['header'];
+      });
+    });
+  }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
-      final curTime = DateTime.now();
-      final time = DateFormatter.databaseDate.format(curTime);
-      // final time = '2022-01-03';
-
-      final body = {
-        "id_vendedor": AppUser.of(context).vendedorAtual,
-        // "id_vendedor": 7,
-        "data_inicio": time,
-        "data_fim": time
-      };
-
-      Internet.serverPost('dash/meta/vendedor/', context: context, body: body)
-          .then((value) {
-        if (value.statusCode != 200) {
-          return;
-        }
-
-        setState(() {
-          // ID_VENDEDOR,
-          // DATA_EMISSAO,
-          // PRODUTO,
-          // VENDAS,
-          // QUANTIDADE,
-          // TOTAL_FINAL
-          isLoading = false;
-          itens = const JsonDecoder().convert(value.body)['rows'];
-        });
-      });
+      getData();
     });
   }
 
+  final controllerScroll = ScrollController();
+
   @override
   Widget build(BuildContext context) {
-    final list = SingleChildScrollView(
-      child: Column(
-        children: [
-          Card(
-            child: Column(
-              children: [
-                Center(
+    final list = RefreshIndicator(
+      onRefresh: () async {
+        getData();
+      },
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        controller: controllerScroll,
+        child: Column(
+          children: [
+            if (header.isNotEmpty)
+              Card(
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   child: Column(
-                    children: const [
-                      TextTitle('Agosto 2022'),
-                      TextNormal('01/08/2022 - 31/08/2022')
+                    children: [
+                      Center(
+                        child: Column(
+                          children: [
+                            TextTitle(header['NOME_META'].toString()),
+                            TextNormal(
+                                '${DateFormatter.normalData.format(DateTime.parse(header['DATA_INICIO']))} - ${DateFormatter.normalData.format(DateTime.parse(header['DATA_FIM']))}')
+                          ],
+                        ),
+                      ),
+                      TileSpacedText(
+                          'Vendedor', header['NOME_VENDEDOR'].toString()),
+                      TileSpacedText(
+                          'Dias Utieis', header['DIAS_UTEIS'].toString()),
+                      TileSpacedText('Dias Decorridos',
+                          header['DIAS_DECORRIDOS'].toString()),
+                      TileSpacedText('Dias Restantes',
+                          header['DIAS_RESTANTES'].toString()),
                     ],
                   ),
                 ),
-                TileSpacedText('Vendedor', ''),
-                TileSpacedText('Vendedor', ''),
-                TileSpacedText('Vendedor', ''),
-              ],
+              ),
+            ListView.builder(
+              shrinkWrap: true,
+              itemCount: itens.length,
+              physics: const ClampingScrollPhysics(),
+              itemBuilder: (context, index) {
+                final item = itens[index];
+                return TileMetaItem(item: item);
+              },
             ),
-          ),
-          ListView.builder(
-            shrinkWrap: true,
-            itemCount: itens.length,
-            itemBuilder: (context, index) {
-              final item = itens[index];
-
-              return TileCritia(item: item);
-            },
-          ),
-        ],
+          ],
+        ),
       ),
     );
 
@@ -128,50 +147,6 @@ class _TelaState extends State<_Tela> {
       drawer: const CustomDrawer(),
       // backgroundColor: Colors.grey[200],
       body: isLoading ? carregando : list,
-    );
-  }
-}
-
-class TileCritia extends StatelessWidget {
-  const TileCritia({Key? key, required this.item}) : super(key: key);
-
-  final List<dynamic> item;
-
-  @override
-  Widget build(BuildContext context) {
-
-    String round(dynamic x){
-      return double.parse(x.toString()).toStringAsFixed(2);
-    }
-
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 6),
-        child: ExpansionTile(
-          title: Row(
-            children: [
-              const IconNormal(
-                CupertinoIcons.cube_box,
-              ),
-              const SizedBox(width: 8,),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    TextNormal("${item[5]}"),
-                    TextNormal("${item[7]}/${item[6]}")
-                  ],
-                ),
-              ),
-              TextTitle(item[9].toString()),
-            ],
-          ),
-          children: [
-            TileSpacedText('Tendencia Total', round(item[10])),
-            TileSpacedText('Tendencia Pct', '${round(item[11])}%'),
-          ],
-        ),
-      ),
     );
   }
 }

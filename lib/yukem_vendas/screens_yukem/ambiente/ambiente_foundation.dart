@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -13,10 +15,10 @@ import '../../../api/models/configuracao/app_system.dart';
 import '../../../api/screens/support/screen_loading.dart';
 import '../../models/configuracao/app_ambiente.dart';
 import '../../models/database_objects/rota.dart';
+import '../../models/internet/sync_manager.dart';
 import 'base/menu_principal.dart';
 import 'clientes/novo_cliente.dart';
 import 'produtos/tela_novo_produto.dart';
-import 'produtos/tela_view_produto.dart';
 import 'visita/tela_pedido/tela_adicionar_item.dart';
 import 'visita/tela_pedido/tela_item_do_pedido.dart';
 import 'visita/tela_pedido/tela_tabela_de_preco.dart';
@@ -46,13 +48,26 @@ class _AmbienteFoundationState extends State<AmbienteFoundation> {
     setState(() {});
   }
 
+  Timer? backgroundSync;
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
       tryGetApp();
+      const time = Duration(seconds: 150);
+      backgroundSync = Timer.periodic(time, (Timer t) {
+        SyncHandler.sincronizar(context: context);
+      });
     });
+  }
+
+  @override
+  void dispose() {
+    if (backgroundSync != null) {
+      backgroundSync!.cancel();
+    }
   }
 
   @override
@@ -83,6 +98,7 @@ class _AmbienteFoundationState extends State<AmbienteFoundation> {
         localizationsDelegates: const [
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
         ],
         supportedLocales: const [
           Locale('pt', 'BR'),

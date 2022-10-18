@@ -16,10 +16,8 @@ class SyncClientes {
 
   static Future<bool> syncClientes(BuildContext context,
       {bool toPing = true}) async {
-
-
-    if(_sync){
-       return false;
+    if (_sync) {
+      return false;
     }
 
     if (toPing) {
@@ -32,11 +30,7 @@ class SyncClientes {
 
     _sync = true;
 
-
-    callback(){
-
-    }
-
+    callback() {}
 
     List<Cliente> clientes = await Cliente.getClientes(
         queryFilter: QueryFilter(args: {'TO_SYNC': 1}, allowNull: true));
@@ -46,7 +40,7 @@ class SyncClientes {
       return true;
     }
 
-    try{
+    try {
       List<Map<String, dynamic>> body = List.generate(clientes.length, (index) {
         return clientes[index].toBody();
       });
@@ -63,7 +57,6 @@ class SyncClientes {
       // }
 
       for (final cliente in clientes) {
-
         final uuid = cliente.uuid;
         try {
           int? idSync = int.tryParse(maps[uuid].toString());
@@ -95,15 +88,11 @@ class SyncClientes {
 
       _sync = false;
       return true;
-
-    } catch(e){
+    } catch (e) {
       printDebug(e);
       _sync = false;
       return false;
     }
-
-
-
   }
 
   static Future updateVisitaSync() async {

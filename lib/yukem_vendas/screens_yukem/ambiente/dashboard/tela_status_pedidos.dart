@@ -101,7 +101,7 @@ class _TelaState extends State<_Tela> {
     });
   }
 
-  Widget _popupMenu() {
+  Widget _popupTelaStatus() {
     return PopupMenuButton<int>(
       onSelected: (int i) {
         if (i == 1) {
@@ -178,7 +178,7 @@ class _TelaState extends State<_Tela> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Pedidos'),
-        actions: [_popupMenu()],
+        actions: [_popupTelaStatus()],
       ),
       drawer: const CustomDrawer(),
       body: isLoading
@@ -202,7 +202,8 @@ class _TelaState extends State<_Tela> {
                 onPeriodo: onP,
                 range: rangeDate,
                 selectedDate: curDate,
-              )),
+              ),
+            ),
     );
   }
 }
@@ -467,7 +468,6 @@ class ListContainer extends StatelessWidget {
           itemCount: itens.length,
           itemBuilder: (context, index) {
             final item = itens[index];
-
             return TilePedido(item: item);
           },
         )

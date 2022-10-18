@@ -33,6 +33,8 @@ class _SyncLoaderViewerState extends State<SyncLoaderViewer>
     });
   }
 
+  String? error;
+
   void load() async {
     final ambiente = AppUser.of(context).ambiente;
 
@@ -42,26 +44,36 @@ class _SyncLoaderViewerState extends State<SyncLoaderViewer>
     final filePath = await FilePath.getSyncFilePath(ambiente);
 
     setState(() {
-      sync = SyncLoader(this, filePath).unPack();
+      try {
+        sync = SyncLoader(this, filePath).unPack();
+      } catch (e) {
+        error = "Arquivo de Sincronização é inválido";
+        printDebug(e);
+      }
     });
 
+    if(error != null){
+      SyncLoader(this, filePath).unPack();
+    }
+
     sync!.syncAll().then((value) async {
-
       setState(() {
-        DatabaseSystem.insert(
-            'TB_AMBIENTES', {'TO_SYNC': 0, 'NOME': AppUser.of(context).ambiente});
-
+        DatabaseSystem.insert('TB_AMBIENTES',
+            {'TO_SYNC': 0, 'NOME': AppUser.of(context).ambiente});
       });
 
-      DatabaseBackup.restoreBackup().then((value){
+      DatabaseBackup.restoreBackup().then((value) {
         widget.onFinish();
       });
-
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    if (error != null) {
+      return Text(error!);
+    }
+
     if (sync == null) {
       return const Text('Descompactando');
     }

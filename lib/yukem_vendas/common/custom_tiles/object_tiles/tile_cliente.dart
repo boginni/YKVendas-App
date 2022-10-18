@@ -47,7 +47,10 @@ class TileCliente extends StatelessWidget {
                       size: (40 + appSystem.getIconScale()),
                     ),
                     if (cliente.idSync == null)
-                      const IconStatus(statusIconType: StatusIconTypes.warning),
+                      const Positioned(
+                        child:
+                            IconStatus(statusIconType: StatusIconTypes.warning),
+                      ),
                   ],
                 ),
               ),
@@ -64,8 +67,9 @@ class TileCliente extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Flexible(child: TextTitle(
-                            '${cliente.idSync ?? '-'} ${cliente.nome ?? ''}')),
+                        Flexible(
+                            child: TextTitle(
+                                '${cliente.idSync ?? '-'} ${cliente.nome ?? ''}')),
                         if (cliente.toSync)
                           const IconStatus(
                               statusIconType: StatusIconTypes.sync),

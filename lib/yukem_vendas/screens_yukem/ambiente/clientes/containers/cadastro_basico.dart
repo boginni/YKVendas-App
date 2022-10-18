@@ -118,7 +118,7 @@ class CadastroBasico extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(
-                  width: 4,
+                  width: 8,
                 ),
                 Flexible(
                   flex: 5,

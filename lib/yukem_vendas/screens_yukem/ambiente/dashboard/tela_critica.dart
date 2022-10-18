@@ -43,30 +43,9 @@ class _TelaState extends State<_Tela> {
       final time = DateFormatter.databaseDate.format(curTime);
       // final time = '2022-01-03';
 
-      final body = {
-        "id_vendedor": AppUser.of(context).vendedorAtual,
-        // "id_vendedor": 7,
-        "data_inicio": time,
-        "data_fim": time
-      };
 
-      Internet.serverPost('dash/critica/', context: context, body: body)
-          .then((value) {
-        if (value.statusCode != 200) {
-          return;
-        }
 
-        setState(() {
-          // ID_VENDEDOR,
-          // DATA_EMISSAO,
-          // PRODUTO,
-          // VENDAS,
-          // QUANTIDADE,
-          // TOTAL_FINAL
-          isLoading = false;
-          itens = const JsonDecoder().convert(value.body)['rows'];
-        });
-      });
+
     });
   }
 

@@ -59,7 +59,9 @@ class TextTitle extends StatelessWidget {
 
 InputDecoration defaultInputDecoration() {
   return const InputDecoration(
-      isDense: true, contentPadding: EdgeInsets.all(8));
+    isDense: true,
+    contentPadding: EdgeInsets.all(8),
+  );
 }
 
 /// Style Utilizado em [TextTitle]

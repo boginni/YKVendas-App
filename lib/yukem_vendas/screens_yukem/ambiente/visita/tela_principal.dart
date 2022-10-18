@@ -99,7 +99,6 @@ class _FormState extends State<_Form> {
       String r = appAmbiente.usarChegadaCliente
           ? TelaVisita.routeName
           : TelaPedido.routeName;
-
       return r;
     }
 

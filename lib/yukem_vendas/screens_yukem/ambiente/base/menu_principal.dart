@@ -6,12 +6,12 @@ import 'package:forca_de_vendas/yukem_vendas/models/configuracao/app_user.dart';
 import 'package:forca_de_vendas/yukem_vendas/models/file/file_manager.dart';
 import 'package:forca_de_vendas/yukem_vendas/screens_yukem/ambiente/dashboard/tela_status_pedidos.dart';
 import 'package:forca_de_vendas/yukem_vendas/screens_yukem/ambiente/faturamento/tela_faturamento.dart';
-import 'package:forca_de_vendas/yukem_vendas/screens_yukem/ambiente/teste/tela_gerador_vendas.dart';
 import 'package:forca_de_vendas/yukem_vendas/screens_yukem/ambiente/vendas/tela_vendas.dart';
 import 'package:forca_de_vendas/yukem_vendas/screens_yukem/ambiente/vendas/tela_vendas_totais.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
+import '../../../../api/common/components/mostrar_confirmacao.dart';
 import '../../../../api/common/debugger.dart';
 import '../../../models/configuracao/app_ambiente.dart';
 import '../../../models/internet/internet.dart';
@@ -101,6 +101,14 @@ class _BaseSreenState extends State<MenuPrincipal>
 
   final PageController pageController = PageController();
 
+  Future<bool> onWillPop(BuildContext context) async {
+    if (!context.read<PageManager>().previousPage()) {
+      return await mostrarCaixaConfirmacao(context,
+          title: 'Deseja Sair do app?');
+    }
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
     final appAmbiente = AppAmbiente.of(context);
@@ -113,36 +121,36 @@ class _BaseSreenState extends State<MenuPrincipal>
         ),
         Provider(create: (BuildContext context) => ws),
       ],
-      child: PageView(
-        controller: pageController,
-        physics: const NeverScrollableScrollPhysics(),
-        children: [
-          // TelaGerarVendas(),
-          // const Teste(),
-          if (appAmbiente.usarRota) const TelaPrincipal(),
-          if (appAmbiente.usarFaturamento) const TelaFaturamento(),
-          if (appAmbiente.usarComissao) const TelaComissao(),
-          if (appAmbiente.usarVendasTotais) const TelaVendasTotais(),
-          const TelaVisitaConcluida(),
-          if(appAmbiente.usarTelaCritia)
-          const TelaCritica(),
-          if(appAmbiente.usarTelaStatusPedido)
-          const TelaStatusPedido(),
-          if(appAmbiente.usarTelaMetas)
-          const TelaMetas(),
-          if (appAmbiente.usarConsultas) const TelaConsultas(),
+      child: WillPopScope(
+        onWillPop: () => onWillPop(context),
+        child: PageView(
+          controller: pageController,
+          physics: const NeverScrollableScrollPhysics(),
+          children: [
+            // TelaGerarVendas(),
+            // const Teste(),
+            if (appAmbiente.usarRota) const TelaPrincipal(),
+            if (appAmbiente.usarFaturamento) const TelaFaturamento(),
+            if (appAmbiente.usarComissao) const TelaComissao(),
+            if (appAmbiente.usarVendasTotais) const TelaVendasTotais(),
+            const TelaVisitaConcluida(),
+            if (appAmbiente.usarTelaCritia) const TelaCritica(),
+            if (appAmbiente.usarTelaStatusPedido) const TelaStatusPedido(),
+            if (appAmbiente.usarTelaMetas) const TelaMetas(),
+            if (appAmbiente.usarConsultas) const TelaConsultas(),
 
-          if (appAmbiente.usarCadastroCliente) const TelaClientes(),
-          const TelaProdutos(),
-          if (appAmbiente.usarRota) const TelaRotas(),
-          // const TelaConsultas(),
-          if (appAmbiente.usarRota && appAmbiente.usarIncluirVisitaAgenda)
-            const TelaIncluirVisita(),
-          // const TelaTestJson(),
-          // const TelaSincronizacao(),
-          const TelaConfiguracoesUser(),
-          // const LoginScreen(),
-        ],
+            if (appAmbiente.usarCadastroCliente) const TelaClientes(),
+            const TelaProdutos(),
+            if (appAmbiente.usarRota) const TelaRotas(),
+            // const TelaConsultas(),
+            if (appAmbiente.usarRota && appAmbiente.usarIncluirVisitaAgenda)
+              const TelaIncluirVisita(),
+            // const TelaTestJson(),
+            // const TelaSincronizacao(),
+            const TelaConfiguracoesUser(),
+            // const LoginScreen(),
+          ],
+        ),
       ),
     );
   }

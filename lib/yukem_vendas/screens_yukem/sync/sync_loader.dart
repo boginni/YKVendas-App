@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:forca_de_vendas/api/common/formatter/date_time_formatter.dart';
 
-import '../../../api/common/debugger.dart';
 import '../../models/database/database_ambiente.dart';
 
 class SyncLoader {
@@ -34,6 +33,7 @@ class SyncLoader {
 
     final data = const JsonDecoder()
         .convert(utf8.decode(unpacked, allowMalformed: true));
+
     unpacked = null;
 
     this.data = data['time'];
@@ -62,13 +62,10 @@ class SyncLoader {
       tables[element['VIEW']] = [element['TABLE'], element['APELIDO']];
     }
 
-    String time =
-        DateFormatter.databaseDateTime.format(DateTime.parse(data));
+    String time = DateFormatter.databaseDateTime.format(DateTime.parse(data));
 
     for (final key in _normalViews.keys) {
-
       final view = _normalViews[key];
-
 
       listener.onProgress(tables[key]![1], i++, _totalViews);
       await _loadContent(tables[key]![0], view, filter: ['DATA_LAST_UPDATE']);
@@ -88,7 +85,6 @@ class SyncLoader {
     //     'UPDATE CONF_IMP_TABLES set IMPORTADO = REIMPORTAR * -1 + 1');
 
     for (final key in _rotaViews.keys) {
-
       final view = _rotaViews[key];
       listener.onProgress(tables[key]![1], i++, _totalViews);
       await _loadContent(tables[key]![0], view,
@@ -96,8 +92,7 @@ class SyncLoader {
           filter: ['ID_EMPRESA', 'RT_ROTA', 'RT_VENDEDOR', 'DATA_LAST_UPDATE']);
     }
 
-      // printDebug('finalizado');
-
+    // printDebug('finalizado');
 
     listener.onProgress('Finalizando...', _totalViews, _totalViews);
 
@@ -116,12 +111,13 @@ class SyncLoader {
       final Map<String, dynamic> map = {};
 
       for (int i = 0; i < columns.length; i++) {
-        final colum = columns[i];
-        if (filter.where((element) => element == colum).isNotEmpty) {
+        final column = columns[i];
+
+        if (filter.where((element) => element == column).isNotEmpty) {
           continue;
         }
 
-        map[colum] = row[i];
+        map[column] = row[i];
       }
 
       maps.add(map);

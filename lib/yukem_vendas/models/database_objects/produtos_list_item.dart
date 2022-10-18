@@ -86,30 +86,34 @@ class ProdutoListItem {
     // add(b);
   }
 
-  ProdutoListItem(
-      {required this.idTabela,
-      required this.idProduto,
-      required this.idVisita,
-      required this.nome,
-      required this.estoque,
-      required this.quantidadeNormal,
-      required this.quantidadeBrinde,
-      required this.totalLiq,
-      required this.totalBruto,
-      required this.editavel,
-      required this.valorTabela,
-      required this.valorOriginal});
+  ProdutoListItem({required this.idTabela,
+    required this.idProduto,
+    required this.idVisita,
+    required this.nome,
+    required this.estoque,
+    required this.quantidadeNormal,
+    required this.quantidadeBrinde,
+    required this.totalLiq,
+    required this.totalBruto,
+    required this.editavel,
+    required this.valorTabela,
+    required this.valorOriginal});
 
   getQuantidade() => (quantidadeBrinde + quantidadeNormal);
 }
 
 /// Retorna a lista de produtos da tabela [VW_PRODUTO_LIST]
-Future<List<ProdutoListItem>> getProdutoList(int idVisita,
-    {required FiltrosProdutos filtros,
-    int? idTabela,
-    bool limitar = false}) async {
-  return _selectMainStream(filtros.getWhere(), filtros.getArgs(), idTabela,
-      limitar: limitar);
+Future<List<ProdutoListItem>> getProdutoList(int idVisita, {
+  required FiltrosProdutos filtros,
+  int? idTabela,
+  bool limitar = false,
+}) async {
+  return _selectMainStream(
+    filtros.getWhere(),
+    filtros.getArgs(),
+    idTabela,
+    limitar: limitar,
+  );
 }
 
 /// Retorna os itens(Produtos) selecionados de uma visita através da tabela [VW_VISITA_ITEM]
@@ -120,13 +124,17 @@ Future<List<ProdutoListItem>> getProdutoItensVisita(int idVisita) async {
   String args = "EDITAVEL = ? AND ID_VISITA = ?";
   List<dynamic> param = [1, idVisita];
 
-  final list = await _selectMainStream(args, param, idTabela);
+  final list = await _selectMainStream(
+    args,
+    param,
+    idTabela,
+  );
 
   return list;
 }
 
-Future<List<ProdutoListItem>> _selectMainStream(
-    String where, List<dynamic> args, int? idTabela,
+Future<List<ProdutoListItem>> _selectMainStream(String where,
+    List<dynamic> args, int? idTabela,
     {bool limitar = false}) async {
   final List<Map<String, dynamic>> maps;
 
@@ -135,8 +143,12 @@ Future<List<ProdutoListItem>> _selectMainStream(
   where += ' and ID_TABELA = ?';
   args.add(idTabela);
 
-  maps = await DatabaseAmbiente.select('VW_PRODUTO_LIST_TAB',
-      where: where, whereArgs: args, limit: limitar ? 100 : null);
+  maps = await DatabaseAmbiente.select(
+    'VW_PRODUTO_LIST_TAB',
+    where: where,
+    whereArgs: args,
+    limit: limitar ? 100 : null,
+  );
 
   return _mapToList(maps);
 }
