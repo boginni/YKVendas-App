@@ -18,7 +18,7 @@ class _LoginFoundationState extends State<LoginFoundation> {
   @override
   Widget build(BuildContext context) {
     final appSystem = AppSystem.of(context);
-    appSystem.setTheme(AppTheme.fromDefault());
+    appSystem.setTheme(AppThemeOld.fromDefault());
 
     final appTheme = appSystem.appTheme;
 

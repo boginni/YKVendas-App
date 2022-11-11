@@ -283,9 +283,6 @@ class AppAmbiente {
 
     usarTelaMetas = getBool('USAR TELA METAS', false);
 
-
-    print(getBool('USAR TELA METAS', false).toString() + 'USAR TELA METAS');
-
     //MOSTRAR TABELA
     // getBool('', false);
   }

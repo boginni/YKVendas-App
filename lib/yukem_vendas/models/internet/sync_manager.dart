@@ -24,7 +24,6 @@ Future syncronizeEverything(
   }
 
   if (onSync) {
-    printDebug('já sincronizando');
     return;
   }
 
@@ -99,12 +98,13 @@ class SyncHandler {
     await Future.delayed(const Duration(milliseconds: 100)).then(
       (value) async {
         await syncronizeEverything(
-            context: context,
-            onSucess: () => callback(() {
-                  key.currentState!.finish();
-                }),
-            onFail: (e) => callback(() => key.currentState!
-                .setError('A Sincronização Falhou', e.toString())));
+                context: context,
+                onSucess: () => callback(() {
+                      key.currentState!.finish();
+                    }),
+                onFail: (e) => callback(() => key.currentState!
+                    .setError('A Sincronização Falhou', e.toString())))
+            .then((value) => {key.currentState!.finish()});
       },
     );
   }

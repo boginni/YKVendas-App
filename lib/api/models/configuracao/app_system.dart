@@ -67,9 +67,9 @@ class AppSystem {
     }
   }
 
-  late AppTheme appTheme;
+  late AppThemeOld appTheme;
 
-  setTheme(AppTheme theme) {
+  setTheme(AppThemeOld theme) {
     appTheme = theme;
   }
 

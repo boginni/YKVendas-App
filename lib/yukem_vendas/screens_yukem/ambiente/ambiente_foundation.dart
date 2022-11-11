@@ -104,7 +104,6 @@ class _AmbienteFoundationState extends State<AmbienteFoundation> {
           Locale('pt', 'BR'),
         ],
         // locale: const Locale('pt'),
-
         debugShowCheckedModeBanner: true,
         title: "Forca de vendas",
         theme: ThemeData(
