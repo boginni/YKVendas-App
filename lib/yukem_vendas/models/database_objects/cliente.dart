@@ -220,13 +220,15 @@ class Cliente {
   }
 
   static Future<List<Cliente>> getList(String args, List<dynamic> param,
-      {String order = 'ID_SYNC', bool normal = false}) async {
+      {String order = 'ID_SYNC',
+      bool normal = false,
+      int? limit = null}) async {
     late final List<Map<String, dynamic>> maps;
 
     String view = normal ? _viewNormal : _viewVendedor;
 
     maps = await DatabaseAmbiente.select(view,
-        where: args, whereArgs: param, orderBy: order);
+        where: args, whereArgs: param, orderBy: order, limit: limit);
 
     final list = _getList(maps);
 

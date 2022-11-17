@@ -101,55 +101,57 @@ class _TelaMetasState extends State<TelaMetas> {
                 )
               : RefreshIndicator(
                   onRefresh: () async {
-                    getData();
+                    setState(() {
+                      onLoading = true;
+                      onEmpty = false;
+                      getData();
+                    });
                   },
-                  child: SingleChildScrollView(
+                  child: ListView(
                     physics: const AlwaysScrollableScrollPhysics(
                       parent: BouncingScrollPhysics(),
                     ),
                     controller: controllerScroll,
-                    child: Column(
-                      children: [
-                        if (header.isNotEmpty)
-                          Card(
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 12, vertical: 8),
-                              child: Column(
-                                children: [
-                                  Center(
-                                    child: Column(
-                                      children: [
-                                        TextTitle(
-                                            header['NOME_META'].toString()),
-                                        TextNormal(
-                                            '${DateFormatter.normalData.format(DateTime.parse(header['DATA_INICIO']))} - ${DateFormatter.normalData.format(DateTime.parse(header['DATA_FIM']))}')
-                                      ],
-                                    ),
+                    children: [
+                      if (header.isNotEmpty)
+                        Card(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 8),
+                            child: Column(
+                              children: [
+                                Center(
+                                  child: Column(
+                                    children: [
+                                      TextTitle(
+                                          header['NOME_META'].toString()),
+                                      TextNormal(
+                                          '${DateFormatter.normalData.format(DateTime.parse(header['DATA_INICIO']))} - ${DateFormatter.normalData.format(DateTime.parse(header['DATA_FIM']))}')
+                                    ],
                                   ),
-                                  TileSpacedText('Vendedor',
-                                      header['NOME_VENDEDOR'].toString()),
-                                  TileSpacedText('Dias Utieis',
-                                      header['DIAS_UTEIS'].toString()),
-                                  TileSpacedText('Dias Decorridos',
-                                      header['DIAS_DECORRIDOS'].toString()),
-                                  TileSpacedText('Dias Restantes',
-                                      header['DIAS_RESTANTES'].toString()),
-                                ],
-                              ),
+                                ),
+                                TileSpacedText('Vendedor',
+                                    header['NOME_VENDEDOR'].toString()),
+                                TileSpacedText('Dias Utieis',
+                                    header['DIAS_UTEIS'].toString()),
+                                TileSpacedText('Dias Decorridos',
+                                    header['DIAS_DECORRIDOS'].toString()),
+                                TileSpacedText('Dias Restantes',
+                                    header['DIAS_RESTANTES'].toString()),
+                              ],
                             ),
                           ),
-                        ListView.builder(
-                          shrinkWrap: true,
-                          itemCount: itens.length,
-                          physics: const ClampingScrollPhysics(),
-                          itemBuilder: (context, index) {
-                            final item = itens[index];
-                            return TileMetaItem(item: item);
-                          },
                         ),
-                      ],
-                    ),
+                      ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: itens.length,
+                        physics: const ClampingScrollPhysics(),
+                        itemBuilder: (context, index) {
+                          final item = itens[index];
+                          return TileMetaItem(item: item);
+                        },
+                      ),
+                    ],
                   ),
                 ),
     );

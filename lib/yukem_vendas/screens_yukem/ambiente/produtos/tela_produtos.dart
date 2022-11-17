@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:forca_de_vendas/api/models/interface/queue_action.dart';
 import 'package:forca_de_vendas/yukem_vendas/models/configuracao/app_ambiente.dart';
+import 'package:forca_de_vendas/yukem_vendas/screens_yukem/ambiente/dashboard/components/container_loading.dart';
 
 import '../../../../api/common/custom_widgets/custom_text.dart';
 import '../../../../api/models/configuracao/app_system.dart';
@@ -29,10 +30,10 @@ class _TelaProdutosState extends State<TelaProdutos> {
   bool reloadTotais = true;
   TotaisPedido? totaisPedido;
   List<ProdutoListNormal> listProdutos = [];
+  bool mostrarPesquisa = true;
+  bool btnLoading = false;
 
   final ScrollController _scrollController = ScrollController();
-
-  bool mostrarPesquisa = true;
 
   late final AppSystem appSystem;
   late final AppUser appUser;
@@ -45,8 +46,8 @@ class _TelaProdutosState extends State<TelaProdutos> {
     appUser = AppUser.of(context);
     appAmbiente = AppAmbiente.of(context);
 
-    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
-      getList(appAmbiente.limitarResultados);
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      getList(AppAmbiente.of(context).limitarResultados);
     });
   }
 
@@ -63,26 +64,31 @@ class _TelaProdutosState extends State<TelaProdutos> {
       param.add('%$x%');
     }
 
+    print('test');
+
     ProdutoListNormal.getProdutos(
-            where: '($args) AND STATUS = 1 AND MOBILE = 1',
-            args: param,
-            limit: limitar)
-        .then((value) {
+      where: '($args) AND STATUS = 1 AND MOBILE = 1',
+      args: param,
+      limitar: limitar,
+      limit: limit,
+    ).then((value) {
       setState(() {
         listProdutos = value;
-
+        btnLoading = false;
+        onLoading = false;
         if (value.isNotEmpty) {
-          // print('doing loop');
           Future.delayed(const Duration(seconds: 1)).then((value) {
             QueueAction.doLoop();
           });
         } else {
           QueueAction.clearListeners();
-          // print('denied loop');
         }
       });
     });
   }
+
+  bool onLoading = true;
+  int limit = 12;
 
   @override
   Widget build(BuildContext context) {
@@ -92,64 +98,96 @@ class _TelaProdutosState extends State<TelaProdutos> {
         centerTitle: false,
       ),
       drawer: const CustomDrawer(),
-      body: SingleChildScrollView(
-        physics: const ScrollPhysics(),
-        child: Column(
-          children: [
-            if (mostrarPesquisa)
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 12.0, vertical: 6.0),
-                  child: Column(
-                    children: [
-                      TextFormField(
-                        controller: controllerPesquisa,
-                        decoration: const InputDecoration(
-                            fillColor: Colors.white,
-                            filled: true,
-                            hintText: "ID ou Nome do Produto"),
-                        style: textNormalStyle(appSystem),
-                        onChanged: (x) {
-                          if (appSystem.usarPesquisaDinamica) {
-                            getList(appAmbiente.limitarResultados);
-                          }
-                        },
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          FocusManager.instance.primaryFocus?.unfocus();
-                          getList(appAmbiente.limitarResultados);
-                        },
-                        child: const TextTitle('Pesquisar'),
-                      )
-                    ],
-                  ),
+      body: onLoading
+          ? const ContainerLoading()
+          : RefreshIndicator(
+              onRefresh: () =>
+                  getList(AppAmbiente.of(context).limitarResultados),
+              child: ListView(
+                physics: const AlwaysScrollableScrollPhysics(
+                  parent: BouncingScrollPhysics(),
                 ),
+                children: [
+                  if (mostrarPesquisa)
+                    Column(
+                      children: [
+                        Card(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12.0, vertical: 6.0),
+                            child: Column(
+                              children: [
+                                TextFormField(
+                                  controller: controllerPesquisa,
+                                  decoration: const InputDecoration(
+                                    fillColor: Colors.white,
+                                    filled: true,
+                                    hintText: "ID ou Nome do Produto",
+                                  ),
+                                  style: textNormalStyle(appSystem),
+                                  onChanged: (x) {
+                                    if (appSystem.usarPesquisaDinamica) {
+                                      limit = 12;
+                                      getList(appAmbiente.limitarResultados);
+                                    }
+                                  },
+                                ),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    FocusManager.instance.primaryFocus
+                                        ?.unfocus();
+                                    limit = 12;
+                                    getList(appAmbiente.limitarResultados);
+                                  },
+                                  child: const TextTitle('Pesquisar'),
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+                        const Divider()
+                      ],
+                    ),
+                  ListView.builder(
+                    shrinkWrap: true,
+                    physics: const ClampingScrollPhysics(),
+                    itemCount: listProdutos.length,
+                    itemBuilder: (context, index) {
+                      return TileProduto(
+                        produto: listProdutos[index],
+                        mostrarIcone: appAmbiente.mostrarFotoProduto,
+                        ambiente: appUser.ambiente,
+                        onUpdate: () {
+                          setState(() {});
+                        },
+                      );
+                    },
+                  ),
+                  btnLoading
+                      ? const Center(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(vertical: 12),
+                            child: CircularProgressIndicator(),
+                          ),
+                        )
+                      : TextButton(
+                          onPressed: () {
+                            setState(() {
+                              btnLoading = true;
+                            });
+                            Future.delayed(
+                              const Duration(milliseconds: 250),
+                              () {
+                                limit += 100;
+                                getList(true);
+                              },
+                            );
+                          },
+                          child: const Text('Carregar Mais'),
+                        )
+                ],
               ),
-            if (appAmbiente.limitarResultados)
-              const Center(
-                child: TextTitle('Limitando a no maximo 100 resultados'),
-              ),
-            if (mostrarPesquisa) const Divider(),
-            ListView.builder(
-              shrinkWrap: true,
-              physics: const ClampingScrollPhysics(),
-              itemCount: listProdutos.length,
-              itemBuilder: (context, index) {
-                return TileProduto(
-                  produto: listProdutos[index],
-                  mostrarIcone: appAmbiente.mostrarFotoProduto,
-                  ambiente: appUser.ambiente,
-                  onUpdate: () {
-                    setState(() {});
-                  },
-                );
-              },
             ),
-          ],
-        ),
-      ),
     );
   }
 }

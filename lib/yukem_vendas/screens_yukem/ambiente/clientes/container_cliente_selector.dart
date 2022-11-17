@@ -28,6 +28,9 @@ class ContainerClienteSelectorState extends State<ContainerClienteSelector>
   final controllerPesquisa = TextEditingController();
 
   List<Cliente> clientes = [];
+  bool onLoading = true;
+  bool btnLoading = false;
+  int limit = 12;
 
   @override
   void initState() {
@@ -97,19 +100,19 @@ class ContainerClienteSelectorState extends State<ContainerClienteSelector>
     bool normal = (firma && appAmbinete.usarFiltroClienteVendedor) ||
         widget.idVendedor == null;
 
-    Cliente.getList(args, param, normal: normal).then((value) {
+    Cliente.getList(args, param, normal: normal, limit: limit).then((value) {
       setState(() {
+        onLoading = false;
+        btnLoading = false;
         clientes = value;
       });
     });
-
   }
 
   @override
   Widget build(BuildContext context) {
     final appSystem = AppSystem.of(context);
     final appAmbinete = AppAmbiente.of(context);
-
     final field = appAmbinete.buscaClientId ? 'Id' : 'CPF/CNPJ';
 
     return Column(
@@ -130,6 +133,7 @@ class ContainerClienteSelectorState extends State<ContainerClienteSelector>
                     style: textNormalStyle(appSystem),
                     onChanged: (x) {
                       if (appSystem.usarPesquisaDinamica) {
+                        limit = 12;
                         getData();
                       }
                     },
@@ -140,6 +144,7 @@ class ContainerClienteSelectorState extends State<ContainerClienteSelector>
                     Expanded(
                       child: ElevatedButton(
                         onPressed: () {
+                          limit = 12;
                           getData();
                           FocusManager.instance.primaryFocus?.unfocus();
                         },
@@ -156,7 +161,8 @@ class ContainerClienteSelectorState extends State<ContainerClienteSelector>
           child: RefreshIndicator(
             onRefresh: getData,
             child: ListView(
-              physics: const AlwaysScrollableScrollPhysics(),
+              physics: const AlwaysScrollableScrollPhysics(
+                  parent: BouncingScrollPhysics()),
               children: [
                 ListView.builder(
                   physics: const ClampingScrollPhysics(),
@@ -170,6 +176,28 @@ class ContainerClienteSelectorState extends State<ContainerClienteSelector>
                     );
                   },
                 ),
+                btnLoading
+                    ? const Center(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(vertical: 12),
+                          child: CircularProgressIndicator(),
+                        ),
+                      )
+                    : TextButton(
+                        onPressed: () {
+                          setState(() {
+                            btnLoading = true;
+                          });
+                          Future.delayed(
+                            const Duration(milliseconds: 250),
+                            () {
+                              limit += 100;
+                              getData();
+                            },
+                          );
+                        },
+                        child: const Text('Carregar Mais'),
+                      )
               ],
             ),
           ),

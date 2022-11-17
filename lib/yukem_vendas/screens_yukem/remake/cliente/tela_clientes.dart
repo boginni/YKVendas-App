@@ -158,7 +158,7 @@ class _TelaBuscarClienteState extends State<TelaBuscarCliente>
                           onLoading = true;
                           limit += 100;
                           Future.delayed(
-                            Duration(milliseconds: 250),
+                            const Duration(milliseconds: 250),
                             () {
                               search();
                             },

@@ -5,7 +5,7 @@ import 'package:sqflite/sqflite.dart';
 
 import '../../../api/common/debugger.dart';
 
-String appVersion = '0.4.38d';
+String appVersion = '0.4.38e';
 String dbAmbiente = '0.4.38 - 003';
 String dbSystem = '0.4.33 - 001';
 

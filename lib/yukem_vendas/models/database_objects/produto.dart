@@ -6,16 +6,18 @@ class ProdutoListNormal {
 
   ProdutoListNormal({required this.nome, required this.id});
 
-  static Future<List<ProdutoListNormal>> getProdutos(
-      {required String where,
-      required List<dynamic> args,
-      required bool limit}) async {
+  static Future<List<ProdutoListNormal>> getProdutos({
+    required String where,
+    required List<dynamic> args,
+    required bool limitar,
+    int limit = 100,
+  }) async {
     final maps = await DatabaseAmbiente.select(
       'VW_PRODUTO_INFO',
       where: where,
       whereArgs: args,
       orderBy: 'NOME',
-      limit: limit ? 100 : null,
+      limit: limitar ? limit : null,
     );
 
     final list = List.generate(
@@ -31,7 +33,6 @@ class ProdutoListNormal {
 }
 
 class ProdutoInfo {
-
   final int id;
   final String nome;
   final String descricao;
