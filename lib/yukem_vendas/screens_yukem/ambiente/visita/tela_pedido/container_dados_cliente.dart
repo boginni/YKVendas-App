@@ -3,15 +3,19 @@ import 'package:forca_de_vendas/api/common/components/list_scrollable.dart';
 import 'package:forca_de_vendas/api/common/custom_tiles/default_tiles/tile_spaced_text.dart';
 import 'package:forca_de_vendas/api/common/custom_widgets/custom_text.dart';
 import 'package:forca_de_vendas/api/helpers/brasil_formatter.dart';
+import 'package:forca_de_vendas/yukem_vendas/app_foundation.dart';
 import 'package:forca_de_vendas/yukem_vendas/models/configuracao/app_ambiente.dart';
 import 'package:forca_de_vendas/yukem_vendas/models/database_objects/cliente.dart';
 import 'package:forca_de_vendas/yukem_vendas/models/database_objects/visita.dart';
-import 'package:forca_de_vendas/yukem_vendas/screens_yukem/ambiente/clientes/tela_buscar_cliente.dart';
+import 'package:forca_de_vendas/yukem_vendas/screens_yukem/remake/cliente/tela_clientes.dart';
 
 import '../../../../models/database/database_ambiente.dart';
 import '../../../../models/database_objects/contato.dart';
 import '../../../../models/database_objects/pedido.dart';
+import '../../../../models/database_objects/tabela_precos.dart';
+import 'container_tabela_precos.dart';
 
+/// TODO: Converter para STATEFULL
 class ContainerDadosCliente extends StatelessWidget {
   final int idVisita;
 
@@ -59,7 +63,8 @@ class ContainerDadosCliente extends StatelessWidget {
 
           info = Padding(
             padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-            child: ListViewNested(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const TextTitle('Informações básicas'),
                 TileSpacedText('Apelido', cliente.apelido ?? ''),
@@ -113,38 +118,68 @@ class ContainerDadosCliente extends StatelessWidget {
           child: ExpansionTile(
             title: TextButton(
               child: TextTitle(title),
-              onPressed: () {
-                if (pedido.visita.faturamento &&
-                    !appAmbiente.usarFaturamentoComoOrcamento) {
-                  Navigator.of(context).pushNamed(TelaBuscarCliente.routeName,
-                      arguments: [
-                        AppAmbiente.of(context).todosClientesFaturamento &&
-                            pedido.visita.faturamento
-                      ]).then((value) async {
-                    if (value != null) {
-                      final cli = (await Cliente.getCliente((value as int),
-                          sync: false))!;
+              onPressed: (pedido.visita.faturamento &&
+                      !appAmbiente.usarFaturamentoComoOrcamento)
+                  ? () {
+                      Application.navigate(
+                          context,
+                          TelaBuscarCliente(
+                            mostrarTodos:
+                                appAmbiente.todosClientesFaturamento &&
+                                    pedido.visita.faturamento,
+                          )).then((value) async {
+                        if (value != null) {
+                          // final cli = (await Cliente.getCliente((value.id as int),
+                          //     sync: false))!;
 
-                      // printDebug('forma pg imp ${cli.idFormaPg}');
+                          final cli = value as Cliente;
+                          pedido.moduloTotais.setFormaPagamento(cli.idFormaPg);
 
-                      pedido.moduloTotais.setFormaPagamento(cli.idFormaPg);
+                          await DatabaseAmbiente.update(
+                            'TB_VISITA',
+                            {'ID_CLIENTE': value.id},
+                            where: 'ID = ?',
+                            whereArgs: [pedido.visita.id],
+                          );
 
-                      await DatabaseAmbiente.update(
-                          'TB_VISITA', {'ID_CLIENTE': value},
-                          where: 'ID = ?', whereArgs: [pedido.visita.id]);
+                          await DatabaseAmbiente.update(
+                            'TB_VISITA_TOTAIS',
+                            {'ID_FORMA_PAGAMENTO': cli.idFormaPg},
+                            where: 'ID_VISITA = ?',
+                            whereArgs: [pedido.visita.id],
+                          );
 
-                      await DatabaseAmbiente.update('TB_VISITA_TOTAIS',
-                          {'ID_FORMA_PAGAMENTO': cli.idFormaPg},
-                          where: 'ID_VISITA = ?',
-                          whereArgs: [pedido.visita.id]);
+                          pedido.cliente = cli;
 
-                      pedido.cliente = cli;
+                          if (appAmbiente.usarClienteTabela) {
+                            final tabela = (await DatabaseAmbiente.select(
+                                        'TB_CLIENTE',
+                                        where: 'ID_SYNC = ?',
+                                        whereArgs: [pedido.cliente.idSync]))[0]
+                                    ['ID_TABELA_PRECO'] ??
+                                appAmbiente.tabelaPadrao;
 
-                      update();
+
+                            bool test = pedido.moduloVisita.idTabela !=
+                                    tabela &&
+                                await ContainerTabelaPrecos.confirmarAlteracao(
+                                  context,
+                                  pedido.visita.id,
+                                );
+
+                            if (test) {
+                              // TabelaPreco.insertTabelaPreco(pedido.visita.id, tabela);
+
+                              await pedido.moduloVisita.setTabela(tabela);
+                            }
+
+                          }
+
+                          update();
+                        }
+                      });
                     }
-                  });
-                }
-              },
+                  : null,
             ),
             children: [
               Padding(

@@ -156,10 +156,10 @@ class ContainerClienteSelectorState extends State<ContainerClienteSelector>
           child: RefreshIndicator(
             onRefresh: getData,
             child: ListView(
-              physics: AlwaysScrollableScrollPhysics(),
+              physics: const AlwaysScrollableScrollPhysics(),
               children: [
                 ListView.builder(
-                  physics: ClampingScrollPhysics(),
+                  physics: const ClampingScrollPhysics(),
                   shrinkWrap: true,
                   itemCount: clientes.length > 100 ? 100 : clientes.length,
                   itemBuilder: (BuildContext context, int index) {

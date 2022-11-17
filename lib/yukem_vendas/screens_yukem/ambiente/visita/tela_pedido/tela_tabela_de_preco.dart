@@ -66,7 +66,7 @@ class TelaTabelaPrecoState extends State<TelaTabelaPreco> {
                         const TextTitle('Selecione uma Tabela'),
                         DropdownSaved(
                           DropdownSaved.tabelaPreco,
-                          startValue: tabela == null ? null : tabela!.id,
+                          value: tabela == null ? null : tabela!.id,
                           onChange: (i) => setTabela(i),
                           hint: 'Selecione uma Tabela',
                         )

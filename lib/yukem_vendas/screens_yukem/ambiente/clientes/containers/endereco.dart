@@ -64,7 +64,7 @@ class _EnderecoState extends State<Endereco> {
                   flex: 1,
                   child: DropdownSaved(
                     DropdownSaved.uf,
-                    startValue: widget.cliente.idUf,
+                    value: widget.cliente.idUf,
                     onChange: (x) {
                       setState(() {});
                       if (x != null) {
@@ -86,7 +86,7 @@ class _EnderecoState extends State<Endereco> {
                   child: DropdownSaved(
                     DropdownSaved.cidade,
                     key: cidadeKey,
-                    startValue: widget.cliente.idCidade,
+                    value: widget.cliente.idCidade,
                     where:
                         widget.cliente.idUf != null ? "ID_UF = ?" : "ID_UF = 0",
                     whereArgs: widget.cliente.idUf != null

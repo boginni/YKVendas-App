@@ -195,7 +195,7 @@ class _ContainerTotaisPedidoState extends State<ContainerTotaisPedido> {
                                             appAmbiente.usarFormaPagamento &&
                                                 !widget.pedido.moduloTotais
                                                     .viewOnly,
-                                        startValue: widget.pedido.moduloTotais
+                                        value: widget.pedido.moduloTotais
                                             .idFormaPagamento,
                                         onChange: (item) {
                                           update() {

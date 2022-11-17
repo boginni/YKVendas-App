@@ -4,7 +4,10 @@ import 'package:forca_de_vendas/yukem_vendas/models/database/db_backup.dart';
 import 'package:forca_de_vendas/yukem_vendas/models/pdf/drawHeader.dart';
 import 'package:forca_de_vendas/yukem_vendas/screens_login/login_foundation.dart';
 import 'package:forca_de_vendas/yukem_vendas/screens_yukem/yukem_foundation.dart';
+import 'package:provider/provider.dart';
 
+import '../api/app/app_connection.dart';
+import '../api/app/app_theme.dart';
 import 'models/configuracao/app_user.dart';
 import 'models/database/database_ambiente.dart';
 
@@ -42,12 +45,12 @@ class Application extends StatefulWidget {
     }
   }
 
-  static Future navigate(
-      BuildContext context, Widget screen, {Function? callback}) async {
-    await Navigator.push(
-        context, MaterialPageRoute(builder: (context) => screen)).then((value) {
-      if (callback != null) callback();
-    });
+  static Future navigate(BuildContext context, Widget screen,
+      {Function? callback}) async {
+    return await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => screen),
+    );
   }
 }
 
@@ -95,20 +98,34 @@ class _ApplicationState extends State<Application> {
 
   @override
   Widget build(BuildContext context) {
-    return Builder(
-      builder: (BuildContext context) {
-        Widget? child;
-        child = onLogin
-            ? const LoginFoundation()
-            : YokemFoundation(
-                appUser: appUser!,
-              );
+    return MultiProvider(
+      providers: [
+        Provider<AppTheme>(
+          create: (context) {
+            return AppTheme();
+          },
+        ),
+        Provider<AppConnection>(
+          create: (context) {
+            return AppConnection();
+          },
+        ),
+      ],
+      child: Builder(
+        builder: (BuildContext context) {
+          Widget? child;
+          child = onLogin
+              ? const LoginFoundation()
+              : YokemFoundation(
+                  appUser: appUser!,
+                );
 
-        return Container(
-          key: keyYukemVendas,
-          child: child,
-        );
-      },
+          return Container(
+            key: keyYukemVendas,
+            child: child,
+          );
+        },
+      ),
     );
   }
 }

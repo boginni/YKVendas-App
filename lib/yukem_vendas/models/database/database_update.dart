@@ -5,8 +5,8 @@ import 'package:sqflite/sqflite.dart';
 
 import '../../../api/common/debugger.dart';
 
-String appVersion = '0.4.37b';
-String dbAmbiente = '0.4.33 - 004';
+String appVersion = '0.4.38c';
+String dbAmbiente = '0.4.38 - 003';
 String dbSystem = '0.4.33 - 001';
 
 class OperacaoCancelada implements Exception {}
@@ -27,8 +27,6 @@ Future<bool> updateAmbienteDatabase(
 
   if (!check) {
     bool hasVendas = (await DatabaseAmbiente.select('VW_SYNC_CAB')).isNotEmpty;
-
-    // hasVendas = true;
 
     if (hasVendas && !(await onSaveData())) {
       throw OperacaoCancelada();

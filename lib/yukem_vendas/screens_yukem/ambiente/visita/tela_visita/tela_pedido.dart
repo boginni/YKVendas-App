@@ -67,6 +67,7 @@ class _TelaPedidoState extends State {
 
   @override
   Widget build(BuildContext context) {
+
     if (pedido != null) {
       return ContainerPedido(
         pedido: pedido!,
@@ -75,6 +76,8 @@ class _TelaPedidoState extends State {
         },
       );
     }
+
+
 
     return const ScreenLoading(
       back: true,

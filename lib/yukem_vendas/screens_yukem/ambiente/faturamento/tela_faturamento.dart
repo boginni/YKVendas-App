@@ -19,17 +19,10 @@ import '../../../models/internet/sync_manager.dart';
 import '../base/custom_drawer.dart';
 import '../visita/tela_visita/tela_pedido.dart';
 
-class TelaFaturamento extends ModdelScreen {
+
+
+class TelaFaturamento extends StatefulWidget {
   const TelaFaturamento({Key? key}) : super(key: key);
-
-  @override
-  Widget getCustomScreen(BuildContext context) {
-    return const xTelaFaturamento();
-  }
-}
-
-class xTelaFaturamento extends StatefulWidget {
-  const xTelaFaturamento({Key? key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -37,7 +30,7 @@ class xTelaFaturamento extends StatefulWidget {
   }
 }
 
-class _TelaFaturamentoState extends State<xTelaFaturamento> {
+class _TelaFaturamentoState extends State<TelaFaturamento> {
   List<Visita> visitas = [];
   final ScrollController _scrollController = ScrollController();
   final _pesquisaController = TextEditingController();

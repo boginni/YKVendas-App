@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:forca_de_vendas/yukem_vendas/app_foundation.dart';
 
 import '../../../../../api/common/components/barra_progresso.dart';
 import '../../../../../api/common/components/list_scrollable.dart';
@@ -17,12 +18,12 @@ import '../../../../models/database_objects/produtos_list_item.dart';
 import '../../../../models/database_objects/totais_pedido.dart';
 import '../../../../models/database_objects/visita.dart';
 import '../../../../models/pdf/pdf_pedido.dart';
+import '../../../remake/util/tela_importar_produtos.dart';
 import '../../comodato/tela_comodato.dart';
 import '../../titulos/tela_titulos_vencidos.dart';
 import '../tela_pedido/container_dados_cliente.dart';
 import '../tela_pedido/container_tabela_precos.dart';
 import '../tela_pedido/tela_adicionar_item.dart';
-import '../tela_visita/tela_importar_produtos.dart';
 import '../tela_visita/tela_pedido.dart';
 import 'container_totais.dart';
 
@@ -51,7 +52,6 @@ class _ContainerPedidoState extends State<ContainerPedido> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
   }
 
@@ -61,10 +61,6 @@ class _ContainerPedidoState extends State<ContainerPedido> {
 
     widget.pedido.update = () {
       addProdutosKey.currentState!.setState(() {});
-
-      // setState(() {
-      //
-      // });
     };
 
     ///Redireciona para rota alvo, depois faz update
@@ -260,16 +256,30 @@ class _ContainerPedidoState extends State<ContainerPedido> {
                   });
               break;
             case 2:
-              redirect(TelaImportarProdutos.routeName,
-                  customArg: [getVisita().id, getVisita().idPessoaSync]);
+              Application.navigate(
+                  context,
+                  TelaHistoricoPedidos(
+                    idPessoa: getVisita().idPessoaSync,
+                    idVisita: getVisita().id,
+                  ));
               break;
             case 3:
-              Navigator.of(context).pushNamed(TelaTitulos.routeName,
-                  arguments: getVisita().idPessoaSync);
+              if (getVisita().idPessoaSync != null) {
+                Application.navigate(
+                  context,
+                  TelaTitulos(
+                    idPessoaSync: getVisita().idPessoaSync!,
+                  ),
+                );
+              }
               break;
             case 4:
-              Navigator.of(context).pushNamed(TelaComodato.routeName,
-                  arguments: getVisita().idPessoaSync);
+              Application.navigate(
+                context,
+                TelaComodato(
+                  idPessoaSync: getVisita().idPessoaSync,
+                ),
+              );
               break;
             case 5:
               TelaPedido.performHotReload(context);
@@ -332,9 +342,10 @@ class _ContainerPedidoState extends State<ContainerPedido> {
           barChildrens: [
             ButtonLimpar(enabled: true, onPressed: limpar),
             ButtonSalvar(
-                enabled: !(appAmbiente.usarFaturamentoComoOrcamento &&
-                    getVisita().faturamento),
-                onPressed: salvar)
+              enabled: !(appAmbiente.usarFaturamentoComoOrcamento &&
+                  getVisita().faturamento),
+              onPressed: salvar,
+            )
           ],
           child: ListView(
             children: [
@@ -343,13 +354,13 @@ class _ContainerPedidoState extends State<ContainerPedido> {
                   ContainerDadosCliente(
                     idVisita: getVisita().id,
                     pedido: widget.pedido,
-                    update: () {
+                    update: () async {
                       updateVisita();
                     },
                   ),
                   if (appAmbiente.usarTabela || appAmbiente.mostrarTabela)
                     ContainerTabelaPrecos(
-                      idVisita: getVisita().id,
+                      visita: getVisita(),
                       onChange: (int? i) {
                         updateVisita();
                       },

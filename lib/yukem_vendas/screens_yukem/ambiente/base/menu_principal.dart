@@ -8,6 +8,7 @@ import 'package:forca_de_vendas/yukem_vendas/screens_yukem/ambiente/dashboard/te
 import 'package:forca_de_vendas/yukem_vendas/screens_yukem/ambiente/faturamento/tela_faturamento.dart';
 import 'package:forca_de_vendas/yukem_vendas/screens_yukem/ambiente/vendas/tela_vendas.dart';
 import 'package:forca_de_vendas/yukem_vendas/screens_yukem/ambiente/vendas/tela_vendas_totais.dart';
+import 'package:forca_de_vendas/yukem_vendas/screens_yukem/remake/vendas/tela_vendas.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
@@ -129,6 +130,8 @@ class _BaseSreenState extends State<MenuPrincipal>
           children: [
             // TelaGerarVendas(),
             // const Teste(),
+
+            if (appAmbiente.usarTelaVendas2) const TelaVendas(),
             if (appAmbiente.usarRota) const TelaPrincipal(),
             if (appAmbiente.usarFaturamento) const TelaFaturamento(),
             if (appAmbiente.usarComissao) const TelaComissao(),

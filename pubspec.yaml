@@ -36,15 +36,16 @@ dependencies:
   share:
   cached_network_image: ^3.2.0
   flutter_barcode_scanner:
-  #flutter_barcode_scanner: ^2.0.0
+  # flutter_barcode_scanner: ^2.0.0
   syncfusion_flutter_core: 20.1.55
   syncfusion_flutter_charts: 20.1.55
   syncfusion_flutter_pdf:
   web_socket_channel:
-
+  google_fonts: 3.0.1
 
 
   printing: ^5.8.0
+
 
   platform_device_id: ^1.0.1
   connectivity_plus: ^2.3.3

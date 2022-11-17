@@ -7,6 +7,7 @@ import '../../../../../api/common/components/list_scrollable.dart';
 import '../../../../../api/common/custom_tiles/default_tiles/tile_text.dart';
 import '../../../../../api/common/custom_widgets/custom_buttons.dart';
 import '../../../../../api/common/custom_widgets/floating_bar.dart';
+import '../../../../app_foundation.dart';
 import '../../../../models/configuracao/app_ambiente.dart';
 import '../../../../models/database_objects/chegada_cliente.dart';
 import '../../../../models/database_objects/visita.dart';
@@ -80,8 +81,12 @@ class TelaChegadaCliente extends StatelessWidget {
               child: TextButton(
                 child: const TextTitle('Comodatos'),
                 onPressed: () {
-                  Navigator.of(context).pushNamed(TelaComodato.routeName,
-                      arguments: visita.idPessoaSync);
+                  Application.navigate(
+                    context,
+                    TelaComodato(
+                      idPessoaSync: visita.idPessoaSync,
+                    ),
+                  );
                 },
               ),
             ),
@@ -90,8 +95,14 @@ class TelaChegadaCliente extends StatelessWidget {
               child: TextButton(
                 child: const TextTitle('Títulos em aberto'),
                 onPressed: () {
-                  Navigator.of(context).pushNamed(TelaTitulos.routeName,
-                      arguments: visita.idPessoaSync);
+                  if (visita.idPessoaSync != null) {
+                    Application.navigate(
+                      context,
+                      TelaTitulos(
+                        idPessoaSync: visita.idPessoaSync!,
+                      ),
+                    );
+                  }
                 },
               ),
             ),

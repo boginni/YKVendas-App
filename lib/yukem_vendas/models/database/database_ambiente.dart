@@ -232,7 +232,6 @@ abstract class DatabaseAmbiente {
       if (onSucces != null) onSucces();
     } catch (e) {
       printDebug(e.toString());
-
       if (onFail != null) onFail();
     }
   }
@@ -269,17 +268,18 @@ abstract class DatabaseAmbiente {
     final db = await DatabaseAmbiente.getDatabase();
 
     try {
-      await db.insert(
+      final result = await db.insert(
         table,
         map,
         conflictAlgorithm: conflictAlgorithm,
       );
 
       if (onSucces != null) onSucces();
+
+      return result;
     } catch (e) {
       if (printStack) {
         printDebug(e.toString());
-
       }
       if (onFail != null) onFail(e);
     }
@@ -302,7 +302,6 @@ abstract class DatabaseAmbiente {
       await batch.commit();
       return null;
     } catch (e) {
-
       printDebug(e);
       printDebug(e.toString());
 
@@ -328,7 +327,6 @@ abstract class DatabaseAmbiente {
     } catch (e) {
       if (errorLog) {
         printDebug(e.toString());
-
       }
 
       if (onFail != null) {

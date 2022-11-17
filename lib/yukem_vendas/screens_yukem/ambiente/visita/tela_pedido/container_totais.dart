@@ -235,7 +235,7 @@ class _FormTotaisState extends State<_FormTotais> {
 
                       if (!widget.visita.viewOnly()) update();
                     },
-                    startValue: widget.totais.idFormaPagamento,
+                    value: widget.totais.idFormaPagamento,
                   ),
                   if (appAmbiente.usarBotaoComNota && !widget.visita.viewOnly())
                     FormSwitchButton(

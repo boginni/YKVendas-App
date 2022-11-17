@@ -48,6 +48,7 @@ Future<Rota> getUltimaRota() async {
 
 class AppAmbiente {
 
+
   static Future<Map<String, dynamic>> getAppAmbiente(int idUser) async {
 
     final List<Map<String, dynamic>> list =
@@ -115,6 +116,9 @@ class AppAmbiente {
   late bool descontoPct;
 
   late bool ranquearFormaPg;
+
+
+  late bool usarClienteTabela;
 
   AppAmbiente();
 
@@ -283,6 +287,10 @@ class AppAmbiente {
 
     usarTelaMetas = getBool('USAR TELA METAS', false);
 
+    usarClienteTabela = getBool('USAR CLIENTE TABELA', false);
+
+    usarTelaVendas2 = getBool('USAR TELA VENDAS 2', false);
+
     //MOSTRAR TABELA
     // getBool('', false);
   }
@@ -320,6 +328,8 @@ class AppAmbiente {
   late bool usarTelaMetas;
   late bool usarTelaStatusPedido;
   late bool usarTelaCritia;
+
+  late bool usarTelaVendas2;
 
   Map<String, Color> myColors = {
     '1': const Color.fromARGB(255, 4, 125, 141),

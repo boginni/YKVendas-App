@@ -5,9 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:forca_de_vendas/yukem_vendas/models/configuracao/app_user.dart';
 import 'package:forca_de_vendas/yukem_vendas/screens_yukem/ambiente/clientes/tela_buscar_cliente.dart';
-import 'package:forca_de_vendas/yukem_vendas/screens_yukem/ambiente/comodato/tela_comodato.dart';
 import 'package:forca_de_vendas/yukem_vendas/screens_yukem/ambiente/encerramento/tela_encerramento_dia.dart';
-import 'package:forca_de_vendas/yukem_vendas/screens_yukem/ambiente/titulos/tela_titulos_vencidos.dart';
 import 'package:provider/provider.dart';
 
 import '../../../api/common/custom_widgets/custom_text.dart';
@@ -24,7 +22,6 @@ import 'visita/tela_pedido/tela_item_do_pedido.dart';
 import 'visita/tela_pedido/tela_tabela_de_preco.dart';
 import 'visita/tela_visita.dart';
 import 'visita/tela_visita/chegada_cliente.dart';
-import 'visita/tela_visita/tela_importar_produtos.dart';
 import 'visita/tela_visita/tela_pedido.dart';
 import 'visita/tela_visita/tela_visita_realizada.dart';
 import 'visita/tela_visita/tela_visualizacao_visita.dart';
@@ -142,11 +139,7 @@ class _AmbienteFoundationState extends State<AmbienteFoundation> {
           TelaNovoCliente.routeName: (context) => const TelaNovoCliente(),
           TelaAdicionarItem.routeName: (context) => const TelaAdicionarItem(),
           MenuPrincipal.routeName: (context) => const MenuPrincipal(),
-          TelaImportarProdutos.routeName: (context) =>
-              const TelaImportarProdutos(),
           TelaBuscarCliente.routeName: (context) => const TelaBuscarCliente(),
-          TelaComodato.routeName: (context) => const TelaComodato(),
-          TelaTitulos.routeName: (context) => const TelaTitulos(),
           TelaEncarramentoDia.routeName: (context) =>
               const TelaEncarramentoDia(),
         },

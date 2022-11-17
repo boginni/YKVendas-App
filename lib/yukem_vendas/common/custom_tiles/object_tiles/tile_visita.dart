@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:forca_de_vendas/api/common/components/mostrar_confirmacao.dart';
 import 'package:forca_de_vendas/api/helpers/brasil_formatter.dart';
+import 'package:forca_de_vendas/yukem_vendas/app_foundation.dart';
 import 'package:forca_de_vendas/yukem_vendas/models/configuracao/app_ambiente.dart';
 import 'package:forca_de_vendas/yukem_vendas/models/database/database_ambiente.dart';
 import 'package:forca_de_vendas/yukem_vendas/screens_yukem/ambiente/comodato/tela_comodato.dart';
@@ -54,7 +55,6 @@ class TileVisitaState extends State<TileVisita> {
     if (widget.afterUpdate != null) {
       widget.afterUpdate!(widget.visita);
     }
-
   }
 
   @override
@@ -100,13 +100,16 @@ class TileVisitaState extends State<TileVisita> {
                     children: [
                       Expanded(
                         child: TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pushNamed(
-                                TelaComodato.routeName,
-                                arguments: visita.idPessoaSync,
-                              );
-                            },
-                            child: const TextNormal('Ver Comodatos')),
+                          onPressed: () {
+                            Application.navigate(
+                              context,
+                              TelaComodato(
+                                idPessoaSync: visita.idPessoaSync,
+                              ),
+                            );
+                          },
+                          child: const TextNormal('Ver Comodatos'),
+                        ),
                       ),
                     ],
                   ),
@@ -115,12 +118,18 @@ class TileVisitaState extends State<TileVisita> {
                     children: [
                       Expanded(
                         child: TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pushNamed(
-                                  TelaTitulos.routeName,
-                                  arguments: visita.idPessoaSync);
-                            },
-                            child: const TextNormal('Ver Títulos')),
+                          onPressed: () {
+                            if (visita.idPessoaSync != null) {
+                              Application.navigate(
+                                context,
+                                TelaTitulos(
+                                  idPessoaSync: visita.idPessoaSync!,
+                                ),
+                              );
+                            }
+                          },
+                          child: const TextNormal('Ver Títulos'),
+                        ),
                       ),
                     ],
                   ),
@@ -131,27 +140,28 @@ class TileVisitaState extends State<TileVisita> {
                       children: [
                         Expanded(
                           child: TextButton(
-                              onPressed: () {
-                                remover() {
-                                  DatabaseAmbiente.update(
-                                      'TB_VISITA', {'STATUS': 0},
-                                      where: 'ID = ?',
-                                      whereArgs: [visita.id]).then((value) {
-                                    Navigator.pop(context, true);
-                                    widget.afterRemove!();
-                                  });
-                                }
-
-                                mostrarCaixaConfirmacao(context,
-                                        content:
-                                            'Deseja mesmo REMOVER esse Faturamento?')
-                                    .then((value) {
-                                  if (value) {
-                                    remover();
-                                  }
+                            onPressed: () {
+                              remover() {
+                                DatabaseAmbiente.update(
+                                    'TB_VISITA', {'STATUS': 0},
+                                    where: 'ID = ?',
+                                    whereArgs: [visita.id]).then((value) {
+                                  Navigator.pop(context, true);
+                                  widget.afterRemove!();
                                 });
-                              },
-                              child: const TextNormal('Remover Faturamento')),
+                              }
+
+                              mostrarCaixaConfirmacao(context,
+                                      content:
+                                          'Deseja mesmo REMOVER esse Faturamento?')
+                                  .then((value) {
+                                if (value) {
+                                  remover();
+                                }
+                              });
+                            },
+                            child: const TextNormal('Remover Faturamento'),
+                          ),
                         ),
                       ],
                     ),

@@ -79,7 +79,7 @@ class Cadastro extends StatelessWidget {
                   if (configTipo.mostrar)
                     DropdownSaved(
                       'VW_CLIENTE_TIPO',
-                      startValue: cliente.idClienteTipo,
+                      value: cliente.idClienteTipo,
                       // where: "",
                       // whereArgs: [],
                       onChange: (x) {
@@ -94,7 +94,7 @@ class Cadastro extends StatelessWidget {
                   if (editable && configRota.mostrar)
                     DropdownSaved(
                       'VW_ROTA',
-                      startValue: cliente.idRota,
+                      value: cliente.idRota,
                       where: "ID_VENDEDOR = ?",
                       whereArgs: [appUser.vendedorAtual],
                       onChange: (x) {
@@ -141,7 +141,7 @@ class Cadastro extends StatelessWidget {
                           DropdownSaved.formaPagamento,
                           where: args,
                           whereArgs: param,
-                          startValue: cliente.idFormaPg,
+                          value: cliente.idFormaPg,
                           onChange: (x) {
                             if (configFormaPg.editavel) {
                               cliente.idFormaPg = x;
@@ -156,7 +156,7 @@ class Cadastro extends StatelessWidget {
                   if (editable && configTabela.mostrar)
                     DropdownSaved(
                       DropdownSaved.tabelaPreco,
-                      startValue: cliente.idTabelaPrecos,
+                      value: cliente.idTabelaPrecos,
                       onChange: (x) {
                         if (editable) {
                           cliente.idTabelaPrecos = x;

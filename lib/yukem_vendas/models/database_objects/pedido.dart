@@ -37,7 +37,18 @@ class Pedido {
         await ChegadaCliente(idVisita).salvar();
       }
 
-      moduloVisita.setTabela(appAmbiente.tabelaPadrao);
+      if (appAmbiente.usarClienteTabela) {
+        if (cliente != null) {
+          final value = await DatabaseAmbiente.select('TB_CLIENTE',
+              where: 'ID_SYNC = ?', whereArgs: [cliente.idSync]);
+
+          int tabela = value[0]['ID_TABELA_PRECO'] ?? appAmbiente.tabelaPadrao;
+
+          moduloVisita.setTabela(tabela);
+        }
+      } else {
+        moduloVisita.setTabela(appAmbiente.tabelaPadrao);
+      }
 
       int? formaPg;
 
@@ -103,6 +114,7 @@ class Pedido {
     p.visita = await Visita.getVisita(idVisita);
     final appAmbiente = AppAmbiente.of(context);
 
+
     p.cliente = (await Cliente.getCliente(p.visita.idPessoa))!;
 
     await p.setup(appAmbiente);
@@ -120,7 +132,7 @@ class Pedido {
     final maps = await DatabaseAmbiente.select('TB_VENDEDOR',
         where: 'ID = ?', whereArgs: [p.moduloVisita.idVendedor]);
 
-    if(maps.isNotEmpty){
+    if (maps.isNotEmpty) {
       p.descontoMax = maps[0]['DESCONTO_MAXIMO'];
     }
 

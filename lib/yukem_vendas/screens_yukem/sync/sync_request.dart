@@ -215,7 +215,8 @@ const _normalViews = {
   "MOB_VW_CONF_CADASTRO_CAMPO": null,
   "MOB_VW_MOTIVO_CANCELAMENTO": null,
   "MOB_VW_BLOQUEIO_PG_TIPO": null,
-  "MOB_VW_CLIENTE_TIPO": null
+  "MOB_VW_CLIENTE_TIPO": null,
+  "MOB_VW_VENDEDOR_TABELA" : null
 };
 
 const _rotaViews = [

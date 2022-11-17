@@ -1,4 +1,3 @@
-
 import '../../../api/common/formatter/date_time_formatter.dart';
 import '../database/database_ambiente.dart';
 
@@ -65,8 +64,7 @@ class TituloAberto {
 }
 
 Future<List<TituloAberto>> getTitulosAberto(int? idPessoaSync) async {
-
-  if(idPessoaSync == null){
+  if (idPessoaSync == null) {
     return [];
   }
 
@@ -74,5 +72,7 @@ Future<List<TituloAberto>> getTitulosAberto(int? idPessoaSync) async {
       where: 'ID_PESSOA = ?', whereArgs: [idPessoaSync]);
 
   return List.generate(
-      maps.length, (index) => TituloAberto.fromMap(maps[index]));
+    maps.length,
+    (index) => TituloAberto.fromMap(maps[index]),
+  );
 }

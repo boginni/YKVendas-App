@@ -5,8 +5,10 @@ import 'package:forca_de_vendas/api/common/formatter/date_time_formatter.dart';
 import 'package:forca_de_vendas/yukem_vendas/models/database_objects/contato.dart';
 import 'package:sqflite/sqflite.dart';
 
+import '../../../api/app/app_user.dart';
 import '../../../api/common/debugger.dart';
 import '../../../api/models/database_objects/query_filter.dart';
+import '../configuracao/app_user.dart';
 import '../database/database_ambiente.dart';
 
 class Cliente {
@@ -174,6 +176,49 @@ class Cliente {
   static const String _viewVendedor = 'VW_CLIENTE_VENDEDOR';
   static const String _viewNormal = 'VW_CLIENTE';
 
+  static Future<List<Cliente>> getData(
+    BuildContext context, {
+    String busca = '',
+    bool clienteVendedor = true,
+    bool buscaIdCnpj = true,
+    int limit = 20,
+  }) async {
+    String x = busca;
+
+    int idVendedor = AppUser.of(context).vendedorAtual;
+
+    final field = buscaIdCnpj ? 'ID_SYNC =' : 'CPF_CNPJ like';
+    final filter = '(NOME like ? or APELIDO like ? or $field ?)';
+    String args = 'STATUS = 1';
+
+    List<dynamic> param = [];
+    if (x.isNotEmpty) {
+      args += ' and ${filter}';
+      param.add('%$x%');
+      param.add('%$x%');
+      param.add(buscaIdCnpj ? x : '%$x%');
+    }
+
+    if (clienteVendedor) {
+      args += ' and (ID_VENDEDOR = ? )';
+      param.add(idVendedor);
+    }
+
+    // return await Cliente.getList(args, param, normal: !clienteVendedor);
+
+    String view = clienteVendedor ? _viewVendedor : _viewNormal;
+
+    final maps = await DatabaseAmbiente.select(
+      view,
+      where: args,
+      whereArgs: param,
+      orderBy: 'ID_SYNC',
+      limit: limit,
+    );
+
+    return _getList(maps);
+  }
+
   static Future<List<Cliente>> getList(String args, List<dynamic> param,
       {String order = 'ID_SYNC', bool normal = false}) async {
     late final List<Map<String, dynamic>> maps;
@@ -235,14 +280,14 @@ class Cliente {
     return list;
   }
 
-  static Future<Cliente?> getCliente(int idPessoa, {bool sync: false}) async {
+  static Future<Cliente?> getCliente(int idPessoa, {bool sync = false}) async {
     final queryFilter = QueryFilter(args: {sync ? 'ID_SYNC' : 'ID': idPessoa});
 
     late final List<Map<String, dynamic>> maps;
     if (queryFilter == null) {
-      maps = await DatabaseAmbiente.select(_viewVendedor);
+      maps = await DatabaseAmbiente.select(_viewNormal);
     } else {
-      maps = await DatabaseAmbiente.select(_viewVendedor,
+      maps = await DatabaseAmbiente.select(_viewNormal,
           where: queryFilter.getWhere(), whereArgs: queryFilter.getArgs());
     }
 

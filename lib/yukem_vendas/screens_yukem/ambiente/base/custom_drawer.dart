@@ -47,7 +47,6 @@ class CustomDrawerState extends State<CustomDrawer>
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
     WebsocketEventListener.removeListener(this);
   }
@@ -109,6 +108,12 @@ class CustomDrawerState extends State<CustomDrawer>
           //   title: 'Teste',
           //   page: i++,
           // ),
+          if (appAmbiente.usarTelaVendas2)
+          DrawerTile(
+            iconData: Icons.home,
+            title: 'Vendas',
+            page: i++,
+          ),
 
           if (appAmbiente.usarRota)
             DrawerTile(

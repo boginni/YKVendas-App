@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:forca_de_vendas/api/common/components/mostrar_confirmacao.dart';
 import 'package:forca_de_vendas/api/common/formatter/date_time_formatter.dart';
+import 'package:forca_de_vendas/yukem_vendas/screens_yukem/ambiente/dashboard/components/container_loading.dart';
 import 'package:forca_de_vendas/yukem_vendas/screens_yukem/ambiente/encerramento/tela_encerramento_dia.dart';
 import 'package:forca_de_vendas/yukem_vendas/screens_yukem/ambiente/visita/tela_visita.dart';
 import 'package:forca_de_vendas/yukem_vendas/screens_yukem/ambiente/visita/tela_visita/tela_pedido.dart';
@@ -9,7 +10,6 @@ import 'package:provider/provider.dart';
 
 import '../../../../api/common/components/checkbox.dart';
 import '../../../../api/common/custom_widgets/custom_text.dart';
-import '../../../../api/common/custom_widgets/floating_bar.dart';
 import '../../../../api/common/custom_widgets/popupmenu_item_tile.dart';
 import '../../../../api/models/configuracao/app_system.dart';
 import '../../../common/custom_tiles/object_tiles/tile_visita.dart';
@@ -67,6 +67,9 @@ class _FormState extends State<_Form> {
   late final AppAmbiente appAmbiente;
   late final AppUser appUser;
 
+
+  bool onLoading = true;
+
   @override
   void initState() {
     super.initState();
@@ -88,6 +91,7 @@ class _FormState extends State<_Form> {
   Future updateAndSearch() async {
     setup().then((value) {
       setState(() {
+        onLoading = false;
         visitas = value;
       });
     });
@@ -198,80 +202,106 @@ class _FormState extends State<_Form> {
         ],
       ),
       drawer: const CustomDrawer(),
-      body: BodyFloatingBar(
-          barChildrens: [
-            if (encerramentoDia)
-              TextButton(
-                  onPressed: () {
-                    for (final item in visitas) {
-                      selecionados[item.id] = item;
-                    }
-                    setState(() {});
-                  },
-                  child: const TextNormal('Selecionar todos')),
-            if (encerramentoDia)
-              TextButton(
-                  onPressed: () {
-                    if (selecionados.isEmpty) {
-                      mostrarCaixaConfirmacao(context,
-                          mostrarCancelar: false,
-                          title: 'Selecione os clientes',
-                          content:
-                              'Precisa selecionar pelo menos um cliente para fazer o cancelamento');
-                      return;
-                    }
-                    Navigator.of(context)
-                        .pushNamed(TelaEncarramentoDia.routeName,
-                            arguments: selecionados)
-                        .then((value) {
-                      if (value == true) {
-                        selecionados.clear();
-                        encerramentoDia = false;
-                        updateAndSearch();
-                      }
-                    });
-                  },
-                  child: const TextNormal('Cancelar visitas'))
-          ],
-          child: ListView.builder(
-            itemCount: visitas.length,
-            physics: const ClampingScrollPhysics(),
-            shrinkWrap: true,
-            itemBuilder: (BuildContext context, int index) {
-              final item = visitas[index];
-              final key = GlobalKey();
-              return TileVisita(
-                key: key,
-                visita: item,
-                encerramentoDia: encerramentoDia,
-                selected: selecionados[item.id] != null,
-                redirect: getRedirectRouteName(),
-                afterUpdate: (visita) {
-                  setState(() {
-                    visitas[index] = visita;
-                    SyncHandler.sincronizar(context: context).then((value) {
-                      updateAndSearch();
-                    });
+      body:
+
+      onLoading ?
+      ContainerLoading() :
+      RefreshIndicator(
+        onRefresh: () async {
+          updateAndSearch();
+        },
+        child: ListView.builder(
+          itemCount: visitas.length,
+          physics: const AlwaysScrollableScrollPhysics(
+            parent: BouncingScrollPhysics()
+          ),
+          shrinkWrap: true,
+          itemBuilder: (BuildContext context, int index) {
+            final item = visitas[index];
+            final key = GlobalKey();
+            return TileVisita(
+              key: key,
+              visita: item,
+              encerramentoDia: encerramentoDia,
+              selected: selecionados[item.id] != null,
+              redirect: getRedirectRouteName(),
+              afterUpdate: (visita) {
+                setState(() {
+                  visitas[index] = visita;
+                  SyncHandler.sincronizar(context: context).then((value) {
+                    updateAndSearch();
                   });
-                },
-                onPressed: () {
-                  if (!encerramentoDia) {
-                    return false;
-                  }
+                });
+              },
+              onPressed: () {
+                if (!encerramentoDia) {
+                  return false;
+                }
 
-                  final exists = selecionados[item.id] != null;
+                final exists = selecionados[item.id] != null;
 
-                  if (exists) {
-                    selecionados.remove(item.id);
-                    return false;
-                  } else {
-                    selecionados.addAll({item.id: item});
-                    return true;
-                  }
-                },
-              );
-            },
-          )),
+                if (exists) {
+                  selecionados.remove(item.id);
+                  return false;
+                } else {
+                  selecionados.addAll({item.id: item});
+                  return true;
+                }
+              },
+            );
+          },
+        ),
+      ),
+      bottomNavigationBar: encerramentoDia
+          ? Container(
+              color: Theme.of(context).primaryColor,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: TextButton(
+                          onPressed: () {
+                            for (final item in visitas) {
+                              selecionados[item.id] = item;
+                            }
+                            setState(() {});
+                          },
+                          child: const TextNormal('Selecionar todos')),
+                    ),
+                    const SizedBox(
+                      width: 32,
+                    ),
+                    Expanded(
+                      child: TextButton(
+                          onPressed: () {
+                            if (selecionados.isEmpty) {
+                              mostrarCaixaConfirmacao(context,
+                                  mostrarCancelar: false,
+                                  title: 'Selecione os clientes',
+                                  content:
+                                      'Precisa selecionar pelo menos um cliente para fazer o cancelamento');
+                              return;
+                            }
+                            Navigator.of(context)
+                                .pushNamed(TelaEncarramentoDia.routeName,
+                                    arguments: selecionados)
+                                .then((value) {
+                              if (value == true) {
+                                selecionados.clear();
+                                encerramentoDia = false;
+                                updateAndSearch();
+                              }
+                            });
+                          },
+                          child: const TextNormal('Cancelar visitas')),
+                    )
+                  ],
+                ),
+              ),
+            )
+          : null,
     );
   }
 

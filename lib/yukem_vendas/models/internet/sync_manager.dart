@@ -7,7 +7,6 @@ import 'package:forca_de_vendas/yukem_vendas/models/internet/sync_vendas.dart';
 import 'package:forca_de_vendas/yukem_vendas/models/internet/sync_visitas.dart';
 
 import '../../../api/common/components/barra_progresso.dart';
-import '../../../api/common/debugger.dart';
 import 'internet.dart';
 
 bool onSync = false;
@@ -104,7 +103,7 @@ class SyncHandler {
                     }),
                 onFail: (e) => callback(() => key.currentState!
                     .setError('A Sincronização Falhou', e.toString())))
-            .then((value) => {key.currentState!.finish()});
+            .then((value) => {callback(() => key.currentState!.finish())});
       },
     );
   }

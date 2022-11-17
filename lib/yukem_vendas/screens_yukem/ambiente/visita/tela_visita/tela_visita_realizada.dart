@@ -92,7 +92,7 @@ class _FormState extends State<_Form> {
                           widget.cancelamentoVisita.idMotivo = i;
                         });
                       },
-                      startValue: widget.cancelamentoVisita.idMotivo,
+                      value: widget.cancelamentoVisita.idMotivo,
                     ),
                     const TextTitle('Observação'),
                     TextFormField(

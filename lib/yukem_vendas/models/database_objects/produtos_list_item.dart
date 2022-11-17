@@ -86,33 +86,37 @@ class ProdutoListItem {
     // add(b);
   }
 
-  ProdutoListItem({required this.idTabela,
-    required this.idProduto,
-    required this.idVisita,
-    required this.nome,
-    required this.estoque,
-    required this.quantidadeNormal,
-    required this.quantidadeBrinde,
-    required this.totalLiq,
-    required this.totalBruto,
-    required this.editavel,
-    required this.valorTabela,
-    required this.valorOriginal});
+  ProdutoListItem(
+      {required this.idTabela,
+      required this.idProduto,
+      required this.idVisita,
+      required this.nome,
+      required this.estoque,
+      required this.quantidadeNormal,
+      required this.quantidadeBrinde,
+      required this.totalLiq,
+      required this.totalBruto,
+      required this.editavel,
+      required this.valorTabela,
+      required this.valorOriginal});
 
   getQuantidade() => (quantidadeBrinde + quantidadeNormal);
 }
 
 /// Retorna a lista de produtos da tabela [VW_PRODUTO_LIST]
-Future<List<ProdutoListItem>> getProdutoList(int idVisita, {
+Future<List<ProdutoListItem>> getProdutoList(
+  int idVisita, {
   required FiltrosProdutos filtros,
   int? idTabela,
   bool limitar = false,
+  int limit = 100,
 }) async {
   return _selectMainStream(
     filtros.getWhere(),
     filtros.getArgs(),
     idTabela,
     limitar: limitar,
+    limit: limit
   );
 }
 
@@ -133,9 +137,9 @@ Future<List<ProdutoListItem>> getProdutoItensVisita(int idVisita) async {
   return list;
 }
 
-Future<List<ProdutoListItem>> _selectMainStream(String where,
-    List<dynamic> args, int? idTabela,
-    {bool limitar = false}) async {
+Future<List<ProdutoListItem>> _selectMainStream(
+    String where, List<dynamic> args, int? idTabela,
+    {bool limitar = false, limit = 100}) async {
   final List<Map<String, dynamic>> maps;
 
   idTabela ??= 0;
@@ -147,7 +151,7 @@ Future<List<ProdutoListItem>> _selectMainStream(String where,
     'VW_PRODUTO_LIST_TAB',
     where: where,
     whereArgs: args,
-    limit: limitar ? 100 : null,
+    limit: limitar ? limit : null,
   );
 
   return _mapToList(maps);

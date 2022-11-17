@@ -1,8 +1,6 @@
 import 'package:forca_de_vendas/api/common/map_reader.dart';
 import 'package:forca_de_vendas/yukem_vendas/models/database/database_ambiente.dart';
 
-import '../../../../../api/common/debugger.dart';
-
 class ModuloVisita {
   final int id;
   final int? idSync;
@@ -80,13 +78,13 @@ class ModuloVisita {
     await update({'SITUACAO': 1});
   }
 
-  void setInit(bool bool) async {
+  Future setInit(bool bool) async {
     init = bool;
-    update({'INIT': bool ? 1 : 0});
+    await update({'INIT': bool ? 1 : 0});
   }
 
-  void setTabela(int i) async {
+  Future setTabela(int i) async {
     idTabela = i;
-    update({'ID_TABELA': i});
+    await update({'ID_TABELA': i});
   }
 }

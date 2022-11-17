@@ -87,7 +87,7 @@ class _TelaEncarramentoDiaState extends State<TelaEncarramentoDia> {
                           cancelamentoVisita.idMotivo = i;
                         });
                       },
-                      startValue: cancelamentoVisita.idMotivo,
+                      value: cancelamentoVisita.idMotivo,
                     ),
                     const TextTitle('Observação'),
                     TextFormField(

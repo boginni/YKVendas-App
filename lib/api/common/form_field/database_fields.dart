@@ -34,7 +34,7 @@ class DropdownSaved extends StatefulWidget {
 
   final String hint;
   final String table;
-  final int? startValue;
+  final int? value;
   final bool editable;
   final String? where;
   final List<dynamic>? whereArgs;
@@ -44,7 +44,7 @@ class DropdownSaved extends StatefulWidget {
   const DropdownSaved(
     this.table, {
     Key? key,
-    this.startValue,
+    this.value,
     required this.onChange,
     this.editable = true,
     this.hint = '',
@@ -60,6 +60,8 @@ class DropdownSavedState extends State<DropdownSaved> {
   List<_DropdownSavedValue> _list = [];
   _DropdownSavedValue? currentSelected;
 
+  int? lastValue;
+
   @override
   void initState() {
     super.initState();
@@ -68,7 +70,18 @@ class DropdownSavedState extends State<DropdownSaved> {
     });
   }
 
+
+  @override
+  void didUpdateWidget(dynamic oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if(widget.value != lastValue){
+      loadList();
+    }
+
+  }
+
   Future loadList() async {
+    lastValue = widget.value;
     try {
       late final List<Map<String, dynamic>> maps;
       if (widget.where == null || widget.whereArgs == null) {
@@ -88,7 +101,7 @@ class DropdownSavedState extends State<DropdownSaved> {
             nome: maps[i]['NOME'],
           );
 
-          if (maps[i]['ID'] == widget.startValue) {
+          if (maps[i]['ID'] == widget.value) {
             currentSelected = item;
           }
 
@@ -101,9 +114,9 @@ class DropdownSavedState extends State<DropdownSaved> {
   }
 
   update(final _DropdownSavedValue? item) {
-    setState(() {
-      currentSelected = item;
-    });
+    // setState(() {
+    //   currentSelected = item;
+    // });
 
     widget.onChange(item!.id);
   }
