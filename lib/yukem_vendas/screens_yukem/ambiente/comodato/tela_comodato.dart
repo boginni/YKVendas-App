@@ -60,13 +60,20 @@ class _TelaComodatoState extends State<TelaComodato> {
       ),
       body: onLoading
           ? const ContainerLoading()
-          : ListView.builder(
-              controller: scrollController,
-              shrinkWrap: true,
-              itemCount: list.length,
-              itemBuilder: (BuildContext context, int i) {
-                return TileComodato(itemCab: list[i]);
+          : RefreshIndicator(
+              onRefresh: () async {
+                getData();
               },
+              child: ListView.builder(
+                controller: scrollController,
+                itemCount: list.length,
+                physics: const AlwaysScrollableScrollPhysics(
+                  parent: BouncingScrollPhysics(),
+                ),
+                itemBuilder: (BuildContext context, int i) {
+                  return TileComodato(itemCab: list[i]);
+                },
+              ),
             ),
     );
   }

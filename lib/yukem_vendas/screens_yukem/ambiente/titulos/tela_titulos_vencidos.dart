@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:forca_de_vendas/api/common/components/list_scrollable.dart';
 import 'package:forca_de_vendas/yukem_vendas/models/database_objects/titulos_aberto.dart';
+import 'package:forca_de_vendas/yukem_vendas/screens_yukem/ambiente/dashboard/components/container_loading.dart';
 import 'package:forca_de_vendas/yukem_vendas/screens_yukem/ambiente/titulos/tiles/tile_titulo_vencido.dart';
 
 class TelaTitulos extends StatefulWidget {
@@ -15,13 +15,21 @@ class TelaTitulos extends StatefulWidget {
 class _TelaTitulosState extends State<TelaTitulos> {
   final scrollController = ScrollController();
   List<TituloAberto> list = [];
+  bool onLoading = true;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      getData();
+    });
+  }
+
+  getData() {
     getTitulosAberto(widget.idPessoaSync).then((value) {
       setState(() {
         list = value;
+        onLoading = false;
       });
     });
   }
@@ -32,18 +40,21 @@ class _TelaTitulosState extends State<TelaTitulos> {
       appBar: AppBar(
         title: const Text('Títulos em Aberto'),
       ),
-      body: ListView(
-        controller: scrollController,
-        children: [
-          ListViewScrollable(
-            itemBuilder: (BuildContext context, int i) {
-              return TileTituloVencido(item: list[i]);
-            },
-            maxCount: list.length,
-            scrollController: scrollController,
-          )
-        ],
-      ),
+      body: onLoading
+          ? const ContainerLoading()
+          : RefreshIndicator(
+              onRefresh: () async {
+                getData();
+              },
+              child: ListView.builder(
+                physics: const AlwaysScrollableScrollPhysics(
+                  parent: BouncingScrollPhysics(),
+                ),
+                itemCount: list.length,
+                itemBuilder: (context, index) =>
+                    TileTituloVencido(item: list[index]),
+              ),
+            ),
     );
   }
 }

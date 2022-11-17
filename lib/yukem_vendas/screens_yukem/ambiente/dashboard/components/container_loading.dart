@@ -23,3 +23,27 @@ class ContainerLoading extends StatelessWidget {
     );
   }
 }
+
+class ContainerMessage extends StatelessWidget {
+  const ContainerMessage({Key? key, required this.message}) : super(key: key);
+
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 26, vertical: 30),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // const CircularProgressIndicator(),
+              TextNormal(message),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

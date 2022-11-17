@@ -21,6 +21,7 @@ class TelaMetas extends StatefulWidget {
 
 class _TelaMetasState extends State<TelaMetas> {
   bool onLoading = true;
+  bool onEmpty = false;
 
   List<dynamic> itens = [];
   Map<String, dynamic> header = {};
@@ -37,13 +38,17 @@ class _TelaMetasState extends State<TelaMetas> {
 
     Internet.serverPost('dash/meta/vendedor/', context: context, body: body)
         .then((value) {
-
-      if (value.statusCode != 200) {
-        return;
-      }
-
       setState(() {
         onLoading = false;
+
+        if (value.statusCode == 404) {
+          onEmpty = true;
+        }
+
+        if (value.statusCode != 200) {
+          return;
+        }
+
         itens = const JsonDecoder().convert(value.body)['rows'];
         header = const JsonDecoder().convert(value.body)['header'];
       });
@@ -69,56 +74,84 @@ class _TelaMetasState extends State<TelaMetas> {
       drawer: const CustomDrawer(),
       body: onLoading
           ? const ContainerLoading()
-          : RefreshIndicator(
-              onRefresh: () async {
-                getData();
-              },
-              child: SingleChildScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                controller: controllerScroll,
-                child: Column(
-                  children: [
-                    if (header.isNotEmpty)
-                      Card(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 8),
-                          child: Column(
-                            children: [
-                              Center(
-                                child: Column(
-                                  children: [
-                                    TextTitle(header['NOME_META'].toString()),
-                                    TextNormal(
-                                        '${DateFormatter.normalData.format(DateTime.parse(header['DATA_INICIO']))} - ${DateFormatter.normalData.format(DateTime.parse(header['DATA_FIM']))}')
-                                  ],
-                                ),
-                              ),
-                              TileSpacedText('Vendedor',
-                                  header['NOME_VENDEDOR'].toString()),
-                              TileSpacedText('Dias Utieis',
-                                  header['DIAS_UTEIS'].toString()),
-                              TileSpacedText('Dias Decorridos',
-                                  header['DIAS_DECORRIDOS'].toString()),
-                              TileSpacedText('Dias Restantes',
-                                  header['DIAS_RESTANTES'].toString()),
-                            ],
-                          ),
+          : onEmpty
+              ? Center(
+                  child: Card(
+                    child: TextButton(
+                      onPressed: () {
+                        setState(() {
+                          onLoading = true;
+                          onEmpty = false;
+                          getData();
+                        });
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 26, vertical: 30),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            TextNormal('Não foi encontrado metas'),
+                            Text('Atualizar')
+                          ],
                         ),
                       ),
-                    ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: itens.length,
-                      physics: const ClampingScrollPhysics(),
-                      itemBuilder: (context, index) {
-                        final item = itens[index];
-                        return TileMetaItem(item: item);
-                      },
                     ),
-                  ],
+                  ),
+                )
+              : RefreshIndicator(
+                  onRefresh: () async {
+                    getData();
+                  },
+                  child: SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(
+                      parent: BouncingScrollPhysics(),
+                    ),
+                    controller: controllerScroll,
+                    child: Column(
+                      children: [
+                        if (header.isNotEmpty)
+                          Card(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 8),
+                              child: Column(
+                                children: [
+                                  Center(
+                                    child: Column(
+                                      children: [
+                                        TextTitle(
+                                            header['NOME_META'].toString()),
+                                        TextNormal(
+                                            '${DateFormatter.normalData.format(DateTime.parse(header['DATA_INICIO']))} - ${DateFormatter.normalData.format(DateTime.parse(header['DATA_FIM']))}')
+                                      ],
+                                    ),
+                                  ),
+                                  TileSpacedText('Vendedor',
+                                      header['NOME_VENDEDOR'].toString()),
+                                  TileSpacedText('Dias Utieis',
+                                      header['DIAS_UTEIS'].toString()),
+                                  TileSpacedText('Dias Decorridos',
+                                      header['DIAS_DECORRIDOS'].toString()),
+                                  TileSpacedText('Dias Restantes',
+                                      header['DIAS_RESTANTES'].toString()),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: itens.length,
+                          physics: const ClampingScrollPhysics(),
+                          itemBuilder: (context, index) {
+                            final item = itens[index];
+                            return TileMetaItem(item: item);
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
-            ),
     );
   }
 }

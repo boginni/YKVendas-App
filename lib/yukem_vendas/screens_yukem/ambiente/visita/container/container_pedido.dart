@@ -3,12 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:forca_de_vendas/yukem_vendas/app_foundation.dart';
 
 import '../../../../../api/common/components/barra_progresso.dart';
-import '../../../../../api/common/components/list_scrollable.dart';
 import '../../../../../api/common/components/mostrar_confirmacao.dart';
 import '../../../../../api/common/custom_widgets/custom_buttons.dart';
 import '../../../../../api/common/custom_widgets/custom_icons.dart';
 import '../../../../../api/common/custom_widgets/custom_text.dart';
-import '../../../../../api/common/custom_widgets/floating_bar.dart';
 import '../../../../../api/common/custom_widgets/popupmenu_item_tile.dart';
 import '../../../../../api/common/debugger.dart';
 import '../../../../common/custom_tiles/object_tiles/tile_add_produtos.dart';
@@ -257,11 +255,14 @@ class _ContainerPedidoState extends State<ContainerPedido> {
               break;
             case 2:
               Application.navigate(
-                  context,
-                  TelaHistoricoPedidos(
-                    idPessoa: getVisita().idPessoaSync,
-                    idVisita: getVisita().id,
-                  ));
+                context,
+                TelaHistoricoPedidos(
+                  idPessoa: getVisita().idPessoaSync,
+                  idVisita: getVisita().id,
+                ),
+              ).then((value) {
+                updateVisita();
+              });
               break;
             case 3:
               if (getVisita().idPessoaSync != null) {
@@ -338,72 +339,78 @@ class _ContainerPedidoState extends State<ContainerPedido> {
             _popupMenu(),
           ],
         ),
-        body: BodyFloatingBar(
-          barChildrens: [
-            ButtonLimpar(enabled: true, onPressed: limpar),
-            ButtonSalvar(
-              enabled: !(appAmbiente.usarFaturamentoComoOrcamento &&
-                  getVisita().faturamento),
-              onPressed: salvar,
-            )
-          ],
+        bottomNavigationBar: Container(
+          color: Theme.of(context).primaryColor,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                ButtonLimpar(enabled: true, onPressed: limpar),
+                ButtonSalvar(
+                  enabled: !(appAmbiente.usarFaturamentoComoOrcamento &&
+                      getVisita().faturamento),
+                  onPressed: salvar,
+                )
+              ],
+            ),
+          ),
+        ),
+        body: RefreshIndicator(
+          onRefresh: () async{
+            TelaPedido.performHotReload(context);
+          },
           child: ListView(
+            physics: const AlwaysScrollableScrollPhysics(),
             children: [
-              ListViewNested(
-                children: [
-                  ContainerDadosCliente(
-                    idVisita: getVisita().id,
-                    pedido: widget.pedido,
-                    update: () async {
+              ContainerDadosCliente(
+                idVisita: getVisita().id,
+                pedido: widget.pedido,
+                update: () async {
+                  updateVisita();
+                },
+              ),
+              if (appAmbiente.usarTabela || appAmbiente.mostrarTabela)
+                ContainerTabelaPrecos(
+                  visita: getVisita(),
+                  onChange: (int? i) {
+                    updateVisita();
+                  },
+                ),
+              TileAddProdutosButton(
+                getVisita().id,
+                key: addProdutosKey,
+                concluida: getVisita().itensConcluida,
+                enabled: true,
+                onPressed: () => redirect(TelaAdicionarItem.routeName).then(
+                  (value) {
+                    setState(() {});
+                  },
+                ),
+                afterClickItem: () {
+                  setState(
+                    () {
                       updateVisita();
                     },
-                  ),
-                  if (appAmbiente.usarTabela || appAmbiente.mostrarTabela)
-                    ContainerTabelaPrecos(
-                      visita: getVisita(),
-                      onChange: (int? i) {
-                        updateVisita();
-                      },
-                    ),
-                  TileAddProdutosButton(
-                    getVisita().id,
-                    key: addProdutosKey,
-                    concluida: getVisita().itensConcluida,
-                    enabled: true,
-                    onPressed: () => redirect(TelaAdicionarItem.routeName).then(
-                      (value) {
-                        setState(() {});
-                      },
-                    ),
-                    afterClickItem: () {
-                      setState(
-                        () {
-                          updateVisita();
-                        },
-                      );
-                    },
-                  ),
-
-                  // if (appAmbiente.usarDadosEntrega)
-                  //   ContainerDadosEntrega(
-                  //     idVisita: getVisita().id,
-                  //     onUpdate: () {
-                  //       updateVisita();
-                  //     },
-                  //     dados: widget.pedido.dadosEntrega,
-                  //   ),
-
-                  ContainerTotaisPedido(pedido: widget.pedido),
-                  // if (getVisita().itensConcluida)
-                  //   ContainerTotaisPedido(
-                  //     visita: getVisita(),
-                  //     onUpdate: () =>  addProdutosKey.currentState!.setState(() {}),
-                  //   ),
-                ],
+                  );
+                },
               ),
-              const SizedBox(
-                height: 48,
-              )
+
+              // if (appAmbiente.usarDadosEntrega)
+              //   ContainerDadosEntrega(
+              //     idVisita: getVisita().id,
+              //     onUpdate: () {
+              //       updateVisita();
+              //     },
+              //     dados: widget.pedido.dadosEntrega,
+              //   ),
+
+              ContainerTotaisPedido(pedido: widget.pedido),
+              // if (getVisita().itensConcluida)
+              //   ContainerTotaisPedido(
+              //     visita: getVisita(),
+              //     onUpdate: () =>  addProdutosKey.currentState!.setState(() {}),
+              //   ),
             ],
           ),
         ),
