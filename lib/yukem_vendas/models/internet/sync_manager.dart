@@ -98,9 +98,6 @@ class SyncHandler {
       (value) async {
         await syncronizeEverything(
                 context: context,
-                onSucess: () => callback(() {
-                      key.currentState!.finish();
-                    }),
                 onFail: (e) => callback(() => key.currentState!
                     .setError('A Sincronização Falhou', e.toString())))
             .then((value) => {callback(() => key.currentState!.finish())});
