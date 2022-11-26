@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
-
+import 'package:flutter/rendering.dart';
 import 'package:forca_de_vendas/api/common/components/barra_progresso.dart';
 
 import '../../../../../api/common/custom_widgets/custom_icons.dart';
@@ -10,10 +9,7 @@ import '../../../../../api/common/debugger.dart';
 import '../../../../common/custom_tiles/object_tiles/tile_add_produtos.dart';
 import '../../../../models/database_objects/tabela_precos.dart';
 import '../../../../models/database_objects/visita.dart';
-
 import '../../../../models/pdf/pdf_pedido.dart';
-import 'package:flutter/rendering.dart';
-
 import '../tela_pedido/container_totais.dart';
 
 class TelaVisualizacaoVisita extends StatelessWidget {
@@ -66,10 +62,9 @@ class TelaVisualizacaoVisita extends StatelessWidget {
                                       MainAxisAlignment.spaceBetween,
                                   children: [
                                     InkWell(
-                                      onTap: () {
-
+                                      onTap: () async {
                                         final key =
-                                            mostrarBarraProgressoCircular(
+                                            await mostrarBarraProgressoCircular(
                                                 context);
                                         gerarRelatorio(idVisita, formato: true)
                                             .then((value) {
@@ -80,12 +75,13 @@ class TelaVisualizacaoVisita extends StatelessWidget {
                                               .setError('Error', '');
                                         });
                                       },
-                                      child: const IconBig(Icons.picture_as_pdf),
+                                      child:
+                                          const IconBig(Icons.picture_as_pdf),
                                     ),
                                     InkWell(
-                                      onTap: () {
+                                      onTap: () async {
                                         final key =
-                                            mostrarBarraProgressoCircular(
+                                            await mostrarBarraProgressoCircular(
                                                 context);
 
                                         gerarRelatorio(idVisita, formato: false)

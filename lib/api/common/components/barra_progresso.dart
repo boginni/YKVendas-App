@@ -24,9 +24,8 @@ GlobalKey<BarraProgressoLinearState> mostrarBarraProgresso(
   return alertKey;
 }
 
-GlobalKey<BarraProgressoCircularState> mostrarBarraProgressoCircular(
-    BuildContext context) {
-
+Future<GlobalKey<BarraProgressoCircularState>> mostrarBarraProgressoCircular(
+    BuildContext context) async {
   final alertKey = GlobalKey<BarraProgressoCircularState>();
 
   AlertDialog alert = AlertDialog(
@@ -42,6 +41,8 @@ GlobalKey<BarraProgressoCircularState> mostrarBarraProgressoCircular(
       return alert;
     },
   );
+
+  await Future.delayed(const Duration(milliseconds: 100));
 
   return alertKey;
 }

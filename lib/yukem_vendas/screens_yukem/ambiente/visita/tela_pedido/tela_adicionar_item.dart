@@ -98,7 +98,6 @@ class _TelaAdicionarItemState extends State<TelaAdicionarItem>
             limit: limiteResultados)
         .then(
       (value) {
-
         setState(() {
           itens = value;
           onLoading = false;
@@ -111,7 +110,6 @@ class _TelaAdicionarItemState extends State<TelaAdicionarItem>
         } else {
           QueueAction.clearListeners();
         }
-
       },
     );
   }
@@ -154,8 +152,8 @@ class _TelaAdicionarItemState extends State<TelaAdicionarItem>
           Padding(
             padding: const EdgeInsets.only(right: 20),
             child: InkWell(
-              onTap: () {
-                final key = mostrarBarraProgressoCircular(context);
+              onTap: () async {
+                final key = await mostrarBarraProgressoCircular(context);
                 Future.delayed(const Duration(milliseconds: 250)).then((value) {
                   getListCatalogo().then((list) {
                     gerarCatalogo(list)
@@ -350,7 +348,6 @@ class _TelaAdicionarItemState extends State<TelaAdicionarItem>
                             TextDinheiroReal(valor: tot)
                           ],
                         );
-
                       },
                     ),
                     ButtonSalvar(

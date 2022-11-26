@@ -44,9 +44,9 @@ class _TelaEncarramentoDiaState extends State<TelaEncarramentoDia> {
       await mostrarCaixaConfirmacao(context,
               title: 'Cancelar Visitas',
               content: 'Isso é irreversível, deseja mesmo continuar?')
-          .then((value) {
+          .then((value) async {
         if (value) {
-          final key = mostrarBarraProgressoCircular(context);
+          final key = await mostrarBarraProgressoCircular(context);
 
           CancelamentoVisita.insertCancelamentos(visitas, cancelamentoVisita)
               .then((value) {

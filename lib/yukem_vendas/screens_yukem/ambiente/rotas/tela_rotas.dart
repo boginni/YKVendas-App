@@ -72,8 +72,8 @@ class _TelaRotasState extends State<TelaRotas> implements RealTimeSync {
           Padding(
             padding: const EdgeInsets.only(right: 20),
             child: InkWell(
-              onTap: () {
-                final key = mostrarBarraProgressoCircular(context);
+              onTap: () async {
+                final key = await mostrarBarraProgressoCircular(context);
 
                 Future.delayed(const Duration(milliseconds: 500))
                     .then((value) async {

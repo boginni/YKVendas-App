@@ -214,9 +214,10 @@ class _ContainerPedidoState extends State<ContainerPedido> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 InkWell(
-                                  onTap: () {
+                                  onTap: () async {
                                     final key =
-                                        mostrarBarraProgressoCircular(context);
+                                        await mostrarBarraProgressoCircular(
+                                            context);
 
                                     gerarRelatorio(getVisita().id,
                                             formato: true,
@@ -231,9 +232,10 @@ class _ContainerPedidoState extends State<ContainerPedido> {
                                   child: const IconBig(Icons.picture_as_pdf),
                                 ),
                                 InkWell(
-                                  onTap: () {
+                                  onTap: () async {
                                     final key =
-                                        mostrarBarraProgressoCircular(context);
+                                        await mostrarBarraProgressoCircular(
+                                            context);
                                     gerarRelatorio(getVisita().id,
                                             formato: false)
                                         .then((value) {
@@ -357,7 +359,7 @@ class _ContainerPedidoState extends State<ContainerPedido> {
           ),
         ),
         body: RefreshIndicator(
-          onRefresh: () async{
+          onRefresh: () async {
             TelaPedido.performHotReload(context);
           },
           child: ListView(

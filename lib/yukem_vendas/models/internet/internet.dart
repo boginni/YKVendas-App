@@ -96,8 +96,6 @@ abstract class Internet {
       late final Response res;
 
       if (timeout != null) {
-        print(urlRequest);
-
         res = await post(Uri.parse(urlRequest), body: body, headers: headers)
             .timeout(Duration(milliseconds: timeout));
       } else {
