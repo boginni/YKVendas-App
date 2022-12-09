@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../yukem_vendas/models/database/database_ambiente.dart';
+import '../../../yk_vendas/models/database/database_ambiente.dart';
 
 class CheckBoxItem {
   CheckBoxItem({required this.texto, this.checked = false, this.value});

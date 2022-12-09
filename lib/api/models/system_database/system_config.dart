@@ -1,9 +1,9 @@
 // ignore_for_file: unused_import
 
 import 'package:flutter/cupertino.dart';
-import 'package:forca_de_vendas/api/models/system_database/system_database.dart';
 
 import '../../common/debugger.dart';
+import 'system_database.dart';
 
 class SystemConfig {
   final int id;

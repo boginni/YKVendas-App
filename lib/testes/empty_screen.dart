@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:forca_de_vendas/testes/tela_vazia.dart';
 
 import '../api/models/configuracao/app_system.dart';
 import '../api/models/configuracao/app_theme.dart';
+import 'tela_vazia.dart';
 
 class EmptyScreen extends StatelessWidget {
   const EmptyScreen({Key? key}) : super(key: key);

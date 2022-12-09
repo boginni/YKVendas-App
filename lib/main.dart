@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:forca_de_vendas/yukem_vendas/models/file/file_manager.dart';
 
 import 'api/screens/principal/sistema.dart';
+import 'yk_vendas/models/file/file_manager.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();

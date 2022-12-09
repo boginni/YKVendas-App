@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:forca_de_vendas/api/screens/support/screen_loading.dart';
-import 'package:forca_de_vendas/yukem_vendas/models/database/database_update.dart';
 import 'package:provider/provider.dart';
 
-import '../../../yukem_vendas/app_foundation.dart';
+import '../../../yk_vendas/app_foundation.dart';
+import '../../../yk_vendas/models/database/database_update.dart';
 import '../../models/configuracao/app_system.dart';
 import '../../models/system_database/system_database.dart';
+import '../support/screen_loading.dart';
 
 const String version = '0.1.1';
 
@@ -51,7 +51,7 @@ class _SistemaState extends State<Sistema> {
   initState() {
     super.initState();
 
-    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) async {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
       init();
     });
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:forca_de_vendas/api/common/components/list_scrollable.dart';
+
+import '../../components/list_scrollable.dart';
 
 class TileCollapsable extends StatelessWidget {
   final Widget title;

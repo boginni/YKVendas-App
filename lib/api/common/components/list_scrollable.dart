@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:forca_de_vendas/api/models/interface/queue_action.dart';
+
+import '../../models/interface/queue_action.dart';
 
 class ListViewScrollable extends StatefulWidget {
   final int limiterDefault;
@@ -67,7 +68,7 @@ class _ListViewScrollableState extends State<ListViewScrollable> {
       testSize();
     });
 
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       isBuilding = false;
       QueueAction.doLoop();
     });

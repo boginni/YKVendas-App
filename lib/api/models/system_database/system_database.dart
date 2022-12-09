@@ -1,7 +1,7 @@
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
-import '../../../yukem_vendas/models/database/database_ambiente.dart';
+import '../../../yk_vendas/models/database/database_ambiente.dart';
 import '../../common/debugger.dart';
 import '../database_objects/database_manager.dart';
 
