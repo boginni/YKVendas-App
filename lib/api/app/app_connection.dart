@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart';
 import 'package:provider/provider.dart';
+import 'package:yk_vendas/api/common/debugger.dart';
 
 class AppConnection {
   AppConnection();
@@ -61,7 +62,7 @@ class AppConnection {
 
       return res;
     } on TimeoutException catch (e) {
-      debugPrint('Timeout');
+      printDebug('Timeout');
       rethrow;
     } catch (e) {
       debugPrint(e.toString());

@@ -3,7 +3,7 @@ description: Forca de Vendas integrado com LIVE ERP.
 
 publish_to: 'none'
 
-version: 1.0.39+1
+version: 1.0.40+1
 
 environment:
   sdk: ">=2.12.0-0.0 <3.0.0"
@@ -42,10 +42,7 @@ dependencies:
   syncfusion_flutter_pdf:
   web_socket_channel:
   google_fonts: 3.0.1
-
-
   printing: ^5.8.0
-
 
   platform_device_id: ^1.0.1
   connectivity_plus: ^2.3.3

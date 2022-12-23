@@ -40,7 +40,7 @@ abstract class QueueAction {
           await obj.doTurn();
         }
       } catch (e) {
-        print(e);
+        printDebug(e);
         printDebug('error type: ${e.runtimeType}');
       }
       removeListener(obj);

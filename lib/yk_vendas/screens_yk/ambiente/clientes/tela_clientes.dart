@@ -58,11 +58,27 @@ class _TelaClientesState extends State<TelaClientes> {
 
   @override
   Widget build(BuildContext context) {
+    update(dynamic value) {
+      try {
+        if (value == true) {
+          key.currentState!.getData();
+        }
+
+        SyncClientes.syncClientes(context).then((value) {
+          if (value) {
+            key.currentState!.getData();
+          }
+        });
+      } catch (e) {
+        printDebug(e.toString());
+      }
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Clientes'),
         actions: TelaClientes.getActionButtons(context,
-            callback: () => setState(() {})),
+            callback: () => update(true)),
       ),
       drawer: const CustomDrawer(),
       body: ContainerClienteSelector(
@@ -75,21 +91,7 @@ class _TelaClientesState extends State<TelaClientes> {
               idPessoa: cliente.id,
             ),
           ).then((value) {
-            try {
-              if (value == true) {
-                key.currentState!.getData();
-              }
-
-              SyncClientes.syncClientes(context).then((value) {
-                if (value) {
-                  key.currentState!.getData();
-                }
-              });
-            } catch (e) {
-              printDebug(e.toString());
-            }
-
-            if (value == true) {}
+            update(value);
           });
         },
       ),

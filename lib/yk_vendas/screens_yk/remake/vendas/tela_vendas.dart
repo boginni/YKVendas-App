@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:yk_vendas/api/common/debugger.dart';
 
 import '../../../../api/app/app_theme.dart';
 import '../../../app_foundation.dart';
@@ -130,7 +131,7 @@ class _TelaVendasState extends State<TelaVendas> {
                           ),
                           onTap: () {
                             SelecionarPeriodo.showPicker(context).then((value) {
-                              print(value);
+                              printDebug(value);
                             });
                           },
                         ),

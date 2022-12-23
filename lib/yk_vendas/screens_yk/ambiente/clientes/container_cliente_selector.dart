@@ -90,6 +90,7 @@ class ContainerClienteSelectorState extends State<ContainerClienteSelector>
     bool firma =
         (appAmbinete.usarFirma && widget.idVendedor == appAmbinete.firma);
 
+
     if (!firma && appAmbinete.usarFiltroClienteVendedor) {
       if (widget.idVendedor != null) {
         args += ' and (ID_VENDEDOR = ? )';
@@ -100,13 +101,31 @@ class ContainerClienteSelectorState extends State<ContainerClienteSelector>
     bool normal = (firma && appAmbinete.usarFiltroClienteVendedor) ||
         widget.idVendedor == null;
 
-    Cliente.getList(args, param, normal: normal, limit: limit).then((value) {
+
+
+    final clienteVendedor = appAmbinete.usarFiltroClienteVendedor && !firma &&  widget.idVendedor != null;
+
+    Cliente.getData(
+      context,
+      busca: controllerPesquisa.text,
+      buscaIdCnpj: appAmbinete.buscaClientId,
+      clienteVendedor: clienteVendedor,
+      limit: limit,
+    ).then((value) {
       setState(() {
         onLoading = false;
         btnLoading = false;
         clientes = value;
       });
     });
+
+    // Cliente.getList(args, param, normal: normal, limit: limit).then((value) {
+    //   setState(() {
+    //     onLoading = false;
+    //     btnLoading = false;
+    //     clientes = value;
+    //   });
+    // });
   }
 
   @override

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
+import 'package:yk_vendas/api/common/debugger.dart';
 
 import '../../../api/common/components/barra_progresso.dart';
 import 'internet.dart';
@@ -59,7 +60,6 @@ class SyncHandler {
   }
 
   Future<Object?> syncronizeEverything(BuildContext context) async {
-    print("onSync = ${onSync}");
 
     if (onSync) {
       error = SyncRunning();
@@ -102,7 +102,7 @@ class SyncHandler {
     }
 
     await handler.syncronizeEverything(context).then((value) {
-      print(value);
+      printDebug(value);
 
       if (value == null) {
         return onSucces();

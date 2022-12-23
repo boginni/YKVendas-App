@@ -183,7 +183,6 @@ abstract class Internet {
 
     String urlRequest = '${getHttpServer()}/$path';
 
-    print(urlRequest);
 
     return _getResponse(
         post(Uri.parse(urlRequest), body: body, headers: headers),
@@ -208,7 +207,7 @@ abstract class Internet {
 
     String urlRequest = '${getDefaultHttpServer()}/${ServerPath.VIEW_SERVERS}';
 
-    print(urlRequest);
+    printDebug(urlRequest);
 
     return _getResponse(
         post(Uri.parse(urlRequest), body: body, headers: headers),

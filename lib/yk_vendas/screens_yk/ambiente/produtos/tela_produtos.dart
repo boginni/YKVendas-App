@@ -64,8 +64,6 @@ class _TelaProdutosState extends State<TelaProdutos> {
       param.add('%$x%');
     }
 
-    print('test');
-
     ProdutoListNormal.getProdutos(
       where: '($args) AND STATUS = 1 AND MOBILE = 1',
       args: param,

@@ -74,7 +74,12 @@ class DropdownSavedState extends State<DropdownSaved> {
   @override
   void didUpdateWidget(dynamic oldWidget) {
     super.didUpdateWidget(oldWidget);
+
     if(widget.value != lastValue){
+      if(widget.value == null){
+        currentSelected = null;
+      }
+
       loadList();
     }
 

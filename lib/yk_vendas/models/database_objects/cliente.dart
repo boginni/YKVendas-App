@@ -91,7 +91,7 @@ class Cliente {
       'NUMERO': numero,
       'ID_CIDADE': idCidade,
       'OBSERVACAO': obs,
-      'ID_TABELA_PRECOS': idTabelaPrecos,
+      'ID_TABELA_PRECO': idTabelaPrecos,
       'ID_USUARIO': idUsuario,
       'ID_FORMA_PG': idFormaPg,
       'ID_CLIENTE_TIPO': idClienteTipo,
@@ -223,6 +223,7 @@ class Cliente {
       {String order = 'ID_SYNC',
       bool normal = false,
       int? limit = null}) async {
+
     late final List<Map<String, dynamic>> maps;
 
     String view = normal ? _viewNormal : _viewVendedor;
@@ -269,7 +270,12 @@ class Cliente {
       bool normal = false}) async {
     String view = normal ? _viewNormal : _viewVendedor;
 
+
+
+
     late final List<Map<String, dynamic>> maps;
+
+
     if (queryFilter == null) {
       maps = await DatabaseAmbiente.select(view, orderBy: order);
     } else {
@@ -278,6 +284,8 @@ class Cliente {
           whereArgs: queryFilter.getArgs(),
           orderBy: 'ID_SYNC');
     }
+
+
     final list = _getList(maps);
     return list;
   }

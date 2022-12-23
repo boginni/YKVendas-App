@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../../../api/common/components/list_scrollable.dart';
 import '../../../../api/common/components/mostrar_confirmacao.dart';
@@ -10,12 +11,16 @@ import '../../../../api/helpers/brasil_formatter.dart';
 import '../../../../api/models/configuracao/app_system.dart';
 import '../../../app_foundation.dart';
 import '../../../models/configuracao/app_ambiente.dart';
+import '../../../models/configuracao/app_user.dart';
 import '../../../models/database/database_ambiente.dart';
+import '../../../models/database_objects/db_visita_agenda.dart';
+import '../../../models/database_objects/rota.dart';
 import '../../../models/database_objects/visita.dart';
 import '../../../screens_yk/ambiente/comodato/tela_comodato.dart';
 import '../../../screens_yk/ambiente/encerramento/tela_encerramento_dia.dart';
 import '../../../screens_yk/ambiente/titulos/tela_titulos_vencidos.dart';
 import '../../../screens_yk/ambiente/visita/tela_visita.dart';
+import '../../../screens_yk/ambiente/visita/tela_visita/tela_pedido.dart';
 import '../../../screens_yk/ambiente/visita/tela_visita/tela_visualizacao_visita.dart';
 
 class TileVisita extends StatefulWidget {
@@ -189,6 +194,46 @@ class TileVisitaState extends State<TileVisita> {
                                 });
                               },
                               child: const TextNormal('Cancelar e Justificar')),
+                        ),
+                      ],
+                    ),
+                  if (widget.visita.idPessoaSync != null)
+                    Row(
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Expanded(
+                          child: TextButton(
+                            onPressed: () {
+                              final appAmbiente = AppAmbiente.of(context);
+                              String getRedirectRouteName() {
+                                String r = appAmbiente.usarChegadaCliente &&
+                                        !visita.faturamento
+                                    ? TelaVisita.routeName
+                                    : TelaPedido.routeName;
+                                return r;
+                              }
+
+                              final rota = context.read<Rota>();
+
+                              insertVisitaAgenda(
+                                widget.visita.idPessoaSync!,
+                                rota.id,
+                                idVendedor: AppUser.of(context).vendedorAtual,
+                                faturamento: visita.faturamento,
+                              ).then((value) {
+                                Navigator.of(context)
+                                    .pushNamed(
+                                  getRedirectRouteName(),
+                                  arguments: value,
+                                )
+                                    .then((value) {
+                                  Navigator.pop(context, true);
+                                  widget.afterRemove!();
+                                });
+                              });
+                            },
+                            child: const TextNormal('Nova Venda'),
+                          ),
                         ),
                       ],
                     ),

@@ -16,6 +16,8 @@ class SyncClientes {
 
   static Future<bool> syncClientes(BuildContext context,
       {bool toPing = true}) async {
+    print('sync cliente ${_sync}' );
+
     if (_sync) {
       return false;
     }
@@ -28,12 +30,12 @@ class SyncClientes {
       }
     }
 
+
+
     _sync = true;
 
-    callback() {}
-
     List<Cliente> clientes = await Cliente.getClientes(
-        queryFilter: QueryFilter(args: {'TO_SYNC': 1}, allowNull: true));
+        queryFilter: QueryFilter(args: {'TO_SYNC': 1}, allowNull: true), normal: true);
 
     if (clientes.isEmpty) {
       _sync = false;

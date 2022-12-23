@@ -76,7 +76,7 @@ class WebSocketHandler {
 
 
         ws.listen((data) {
-          print(data);
+          printDebug(data);
 
           try {
             final msg = const JsonDecoder().convert(data);

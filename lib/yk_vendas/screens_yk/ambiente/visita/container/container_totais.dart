@@ -53,7 +53,7 @@ class _ContainerTotaisPedidoState extends State<ContainerTotaisPedido> {
 
   double _descontoValor() {
     double value =
-        double.parse(_conDescValor.text.isEmpty ? '0' : _conDescValor.text);
+    double.parse(_conDescValor.text.isEmpty ? '0' : _conDescValor.text);
 
     value = arredondarValor(value);
 
@@ -62,7 +62,7 @@ class _ContainerTotaisPedidoState extends State<ContainerTotaisPedido> {
 
   double _descontoPorcentagem() {
     double value =
-        double.parse(_conDescValor.text.isEmpty ? '0' : _conDescValor.text);
+    double.parse(_conDescValor.text.isEmpty ? '0' : _conDescValor.text);
 
     value = arredondarValor(value);
 
@@ -136,6 +136,8 @@ class _ContainerTotaisPedidoState extends State<ContainerTotaisPedido> {
       }
     });
 
+
+
     return FutureBuilder(
         future: InfoItens.getFromId(widget.pedido.moduloTotais.idVisita),
         builder: (BuildContext context, AsyncSnapshot<InfoItens?> snapshot) {
@@ -184,7 +186,8 @@ class _ContainerTotaisPedidoState extends State<ContainerTotaisPedido> {
 
                                       if (appAmbiente.mostrarFormaPgCliente) {
                                         args +=
-                                            ' OR ID = ${widget.pedido.cliente.idFormaPg}';
+                                        ' OR ID = ${widget.pedido.cliente
+                                            .idFormaPg}';
                                       }
 
                                       return DropdownSaved(
@@ -192,9 +195,9 @@ class _ContainerTotaisPedidoState extends State<ContainerTotaisPedido> {
                                         where: args,
                                         whereArgs: param,
                                         editable:
-                                            appAmbiente.usarFormaPagamento &&
-                                                !widget.pedido.moduloTotais
-                                                    .viewOnly,
+                                        appAmbiente.usarFormaPagamento &&
+                                            !widget.pedido.moduloTotais
+                                                .viewOnly,
                                         value: widget.pedido.moduloTotais
                                             .idFormaPagamento,
                                         onChange: (item) {
@@ -204,7 +207,12 @@ class _ContainerTotaisPedidoState extends State<ContainerTotaisPedido> {
                                                   FormaPagamento(item).id;
 
                                               widget.pedido.moduloTotais
-                                                  .setFormaPagamento(id);
+                                                  .setFormaPagamento(id).then((
+                                                  value) {
+                                                setState(() {
+
+                                                });
+                                              });
 
                                               if (appAmbiente.ranquearFormaPg) {
                                                 DatabaseAmbiente.execute(
@@ -228,8 +236,12 @@ class _ContainerTotaisPedidoState extends State<ContainerTotaisPedido> {
                                 CloseButton(
                                   onPressed: () {
                                     widget.pedido.moduloTotais
-                                        .setFormaPagamento(null);
-                                    setState(() {});
+                                        .setFormaPagamento(null).then((
+                                        value) {
+                                      setState(() {
+
+                                      });
+                                    });
                                   },
                                 )
                               ],
@@ -274,7 +286,7 @@ class _ContainerTotaisPedidoState extends State<ContainerTotaisPedido> {
                                     // widget.totais.updateDescontoProduto(pct, total);
 
                                     _conDescPct.text = arredondaFracao(
-                                            _descontoPorcentagem() * 100)
+                                        _descontoPorcentagem() * 100)
                                         .toString();
 
                                     update();
@@ -289,11 +301,12 @@ class _ContainerTotaisPedidoState extends State<ContainerTotaisPedido> {
                                     filled: true,
                                   ),
                                   style: const TextStyle(fontSize: 22),
-                                  onTap: () => _conDescPct.selection =
+                                  onTap: () =>
+                                  _conDescPct.selection =
                                       TextSelection(
                                           baseOffset: 0,
                                           extentOffset:
-                                              _conDescPct.value.text.length),
+                                          _conDescPct.value.text.length),
                                   onChanged: (text) {
                                     double x =
                                         double.tryParse(_conDescPct.text) ?? 0;
@@ -301,7 +314,7 @@ class _ContainerTotaisPedidoState extends State<ContainerTotaisPedido> {
                                     x = arredondaFracao(x) / 100;
 
                                     _conDescValor.text = arredondarValor(
-                                            infoItens!.TOTAL_BRUTO * x)
+                                        infoItens!.TOTAL_BRUTO * x)
                                         .toString();
 
                                     // double x = double.parse(
@@ -319,13 +332,13 @@ class _ContainerTotaisPedidoState extends State<ContainerTotaisPedido> {
                                     // widget.totais.descontoValor = desconto;
                                   },
                                   autovalidateMode:
-                                      AutovalidateMode.onUserInteraction,
+                                  AutovalidateMode.onUserInteraction,
                                   // autovalidateMode: AutovalidateMode.onUserInteraction,
                                   validator: (value) {
                                     double x = double.parse(
-                                            _conDescPct.text.isEmpty
-                                                ? '0'
-                                                : _conDescPct.text) /
+                                        _conDescPct.text.isEmpty
+                                            ? '0'
+                                            : _conDescPct.text) /
                                         100.0;
 
                                     if (!appAmbiente.usarDescontoMax) {
@@ -377,16 +390,17 @@ class _ContainerTotaisPedidoState extends State<ContainerTotaisPedido> {
                                   filled: true,
                                 ),
                                 style: const TextStyle(fontSize: 22),
-                                onTap: () => _conDescValor.selection =
+                                onTap: () =>
+                                _conDescValor.selection =
                                     TextSelection(
                                         baseOffset: 0,
                                         extentOffset:
-                                            _conDescValor.value.text.length),
+                                        _conDescValor.value.text.length),
                                 onChanged: (text) {
                                   double value = _descontoValor();
 
                                   double x =
-                                      arredondaFracao(_desconto(value) * 100);
+                                  arredondaFracao(_desconto(value) * 100);
 
                                   _conDescPct.text = x.toString();
 
@@ -417,7 +431,8 @@ class _ContainerTotaisPedidoState extends State<ContainerTotaisPedido> {
                           ],
                         ),
                       TileSpacedText('Desconto maximo:',
-                          "${arredondaPorcentagem(widget.pedido.descontoMax * 100)}%"),
+                          "${arredondaPorcentagem(
+                              widget.pedido.descontoMax * 100)}%"),
                       _Detalhes(
                         widget.pedido.moduloTotais.idVisita,
                         key: detalhesKey,

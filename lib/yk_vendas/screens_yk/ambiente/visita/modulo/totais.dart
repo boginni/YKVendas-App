@@ -87,7 +87,7 @@ class ModuloTotais {
     }
   }
 
-  void setFormaPagamento(int? id) async {
+  Future setFormaPagamento(int? id) async {
     idFormaPagamento = id;
 
     await update({'ID_FORMA_PAGAMENTO': id});

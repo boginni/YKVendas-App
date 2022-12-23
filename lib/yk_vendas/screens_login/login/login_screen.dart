@@ -81,11 +81,12 @@ class _LoginScreenState extends State<LoginScreen> {
              */
             Application.navigate(
               context,
-              const TelaConfiguracoesSistema(),
-              callback: () {
-                setState(() {});
-              },
-            );
+              const TelaConfiguracoesSistema()
+            ).then((value) {
+              setState(() {
+
+              });
+            });
           },
         ),
         actions: [
@@ -97,7 +98,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     context,
                     TelaServidores(
                       ambiente: ambienteController.text,
-                    ), callback: () {
+                    )).then((value) {
                   CurrentServer.getServer().then((value) {
                     setState(() {
                       server = value;

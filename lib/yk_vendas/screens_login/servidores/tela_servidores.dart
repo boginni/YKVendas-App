@@ -51,10 +51,9 @@ class _TelaServidoresState extends State<TelaServidores> {
                   TelaBuscarServidores(
                     ambiente: widget.ambiente,
                   ),
-                  callback: () {
-                    setState(() {});
-                  },
-                );
+                ).then((value) {
+                  setState(() {});
+                });
               },
               child: const Icon(Icons.search, size: 24),
             ),
@@ -235,10 +234,11 @@ class _TelaServidoresState extends State<TelaServidores> {
                                             .then((value) {
                                           if (value) {
                                             DatabaseSystem.delete('TB_SERVIDOR',
-                                                    where: 'ID_LOCAL = ?',
-                                                    whereArgs: [item['ID_LOCAL']])
-                                                .then(
-                                                    (value) => setState(() {}));
+                                                where: 'ID_LOCAL = ?',
+                                                whereArgs: [
+                                                  item['ID_LOCAL']
+                                                ]).then(
+                                                (value) => setState(() {}));
                                           }
                                         });
                                       },
