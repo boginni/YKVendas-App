@@ -14,3 +14,6 @@ Telas:
 + Comissão
 + Consulta de Comodatos
 + Consulta de Títulos e contas do cliente
+
+
+https://play.google.com/store/apps/details?id=net.boginni.yk_vendas
